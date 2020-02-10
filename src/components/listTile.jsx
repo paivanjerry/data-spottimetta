@@ -4,7 +4,7 @@ import "../css/list.css";
 class ListTile extends Component {
   render() {
     return (
-      <tr className="tableRow">
+      <tr className={this.props.className + " tableRow"} onClick={()=>this.changePath(this.props.object.path)}>
         <td>
           <img
             className="listImage"
@@ -26,6 +26,10 @@ class ListTile extends Component {
       </tr>
     );
   }
+  changePath(path){
+    window.location.pathname = "/" + path;
+  }
+
 }
 
 export default ListTile;

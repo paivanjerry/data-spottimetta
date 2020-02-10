@@ -1,20 +1,12 @@
 import React, { Component } from "react";
-import Logo from "../components/logo";
-
-import List from "../components/list";
+import List from "./list";
 
 class HomePage extends Component {
-
-  state = {
-
-  };
+  state = {};
   render() {
     return (
       <div>
-        <Logo></Logo>
-        
-        <List
-        ></List>
+        <List></List>
       </div>
     );
   }

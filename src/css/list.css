@@ -7,7 +7,7 @@ table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
-  margin-bottom: 50px;
+
   cursor: pointer;
 }
 .listanKuvaus{
@@ -32,4 +32,8 @@ th {
 }
 .tableRow:hover{
   background-color:rgba(204, 255, 204, 0.99);
+}
+
+.todo:hover{
+  background-color:rgb(255, 196, 196);
 }
