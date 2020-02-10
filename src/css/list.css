@@ -1,26 +1,35 @@
 .holder {
-    width: 50%;
-    margin: 50px auto;
-    padding: 20px;
-  }
-  table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-  }
-  
-  td, th {
-    border: 1px solid #dddddd;
-    text-align: center;
-    padding: 8px;
-  }
-  table{
-    cursor: pointer;
-  }
- 
+  width: 50%;
+  margin: 50px auto;
+  padding: 20px;
+}
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 50px;
+  cursor: pointer;
+}
+.listanKuvaus{
+  color: rgb(109, 109, 109);
+}
 
-  .listSpan {
-    display: block;
-    width: 100%;
-    font-weight: bolder;
-  }
+td,
+th {
+  border: 1px solid #dddddd;
+  text-align: center;
+  padding: 8px;
+}
+
+.listSpan {
+  display: block;
+  width: 100%;
+  font-weight: bolder;
+}
+.tableRow{
+  background-color: white;
+  transition: 0.5s;
+}
+.tableRow:hover{
+  background-color:rgba(204, 255, 204, 0.99);
+}

@@ -6,35 +6,47 @@ import "../css/list.css";
 class list extends Component {
   constructor(props) {
     super(props);
+    let allListTiles = [
+      {
+        title: "Rekisteröitymiset",
+        description: "Tarkastele rekisteröitymisten määrää reaaliaikaisesti",
+        image: "../images/register.png"
+      },
+      {
+        title: "Spottien lisääjät",
+        description: "Keskimääräisen käyttäjän spottien lisääminen",
+        image: "../images/lisaajat.png"
+      },
+      {
+        title: "Viimeiset kirjautumiset",
+        description: "Tarkastele viimeisiä kirjautumisia",
+        image: "../images/avain.png"
+      },
+      {
+        title: "Paikkojen määrä kategorioittain",
+        description: "Sitä itseään",
+        image: "../images/kategoria.png"
+      },
+      {
+        title: "Kaupunkien spottimäärät",
+        description: "Suomen 10 isointa kaupunkia",
+        image: "../images/kaupunki.png"
+      },
+      {
+        title: "Keskimääräinen spotti",
+        description: "Minkälainen spottimetän keskiverto spotti on",
+        image: "../images/pinni.png"
+      },
+      {
+        title: "Puhelimille asennettujen sovellusen määrä",
+        description: "Android sovelluksen julkaisuhetkestä lähtien.",
+        image: "../images/puhelin.png"
+      }
+    ];
+
     this.state = {
-      allListTiles: [
-        {
-          title: "Rekisteröitymiset",
-          id: "1",
-          description: "Tarkastele rekisteröitymisten määrää reaaliaikaisesti",
-          image: "../images/register.png"
-        },
-        {
-          title: "Spottilisääjät",
-          id: "2",
-          description: "hyvä käpyrä2",
-          image: "../images/puhelin.png"
-        }
-      ],
-      listTiles: [
-        {
-          title: "Rekisteröitymiset",
-          id: "1",
-          description: "Tarkastele rekisteröitymisten määrää reaaliaikaisesti",
-          image: "../images/register.png"
-        },
-        {
-          title: "Spottilisääjät",
-          id: "2",
-          description: "hyvä käpyrä2",
-          image: "../images/puhelin.png"
-        }
-      ]
+      allListTiles: allListTiles,
+      listTiles: [...allListTiles]
     };
   }
   render() {
@@ -49,7 +61,7 @@ class list extends Component {
               <th>Viimeisin päivitys</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody> 
             {this.state.listTiles.map(tile => (
               <ListTile
                 className="listTile"
@@ -64,20 +76,13 @@ class list extends Component {
   }
 
   searchHandler = event => {
-    console.log(
-      "Kutsuttu metodia searchHandler lista tiedostossa " + event.target.value
-    );
-
     let listTiles = [];
     let typedText = event.target.value.toLowerCase();
     const allListTiles = [...this.state.allListTiles];
     for (let i = 0; i < allListTiles.length; i++) {
       const element = allListTiles[i];
       if (element.title.toLowerCase().includes(typedText)) {
-        console.log("Matchi");
         listTiles.push(element);
-      } else {
-        console.log(element.title + " ei sisältäny sanaa " + typedText);
       }
     }
     this.setState({ listTiles });

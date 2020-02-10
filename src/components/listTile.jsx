@@ -4,7 +4,7 @@ import "../css/list.css";
 class ListTile extends Component {
   render() {
     return (
-      <tr className="list">
+      <tr className="tableRow">
         <td>
           <img
             className="listImage"
@@ -16,9 +16,9 @@ class ListTile extends Component {
         <td>
           <div className="vertical">
             <span className="listSpan">{this.props.object.title}</span>
-            <span className="listSpan">{this.props.object.description}</span>
+            <span className="listanKuvaus">{this.props.object.description}</span>
           </div>
-        </td>
+        </td> 
  
         <td>
           <span> Reeaaaliaikaainen</span>

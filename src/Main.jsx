@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import HomePage from "./components/homePage";
+import Footer from "./components/footer";
 import "./App.css";
 import axios from "axios";
 
@@ -42,6 +43,7 @@ class Main extends Component {
     return (
       <div className="App">
         <HomePage></HomePage>
+        <Footer></Footer>
       </div>
     );
   }
