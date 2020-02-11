@@ -1,23 +1,11 @@
-.App {
-  text-align: center;
+*{
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
 }
 
-input[type=text]{
-  width: 90%;
-  margin: 20px;
-}
-table{
-  width: 90%;
-  margin: auto;
-}
-.logo{
-  cursor: pointer;
-}
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App {
+  text-align: center;
 }

@@ -1,8 +1,15 @@
-.footer{
-    height: 200px;
-    margin: 50px;
-    border-top: 1px solid grey;
+.footer {
+  height: 200px;
+  margin: auto;
+  margin-top: 100px;
+
+  width: 90%;
+  border-top: 1px solid rgb(211, 211, 211);
 }
-.footer div{
-    margin-top: 150px;
+.footer div {
+  margin-top: 70px;
+  margin-bottom: 70px;
+}
+.vertical *{
+    display: block;
 }

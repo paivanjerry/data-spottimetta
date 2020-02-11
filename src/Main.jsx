@@ -6,9 +6,8 @@ import RegisterSignIn from "./components/registerSignIn";
 import "./App.css";
 import axios from "axios";
 import Logo from "./components/logo";
-import PlotChart from "./components/plotChart";
 import CityPage from "./components/cityPage";
-import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 class Main extends Component {
   constructor(props) {
@@ -24,7 +23,7 @@ class Main extends Component {
       },
       {
         title: "Spottien lisääjät",
-        description: "Keskimääräisen käyttäjän spottien lisääminen",
+        description: "Käyttäjien toimintoihin liittyviä tilastoja. Esim spotteja lisänneet käyttäjät ja niiden jakauma.",
         image: "../images/lisaajat.png",
         path: "lisaajat",
         className: "todo",
@@ -32,28 +31,28 @@ class Main extends Component {
       },
       {
         title: "Viimeiset kirjautumiset",
-        description: "Tarkastele viimeisiä kirjautumisia",
+        description: "Tarkastele sovellukseen kirjautumisia",
         image: "../images/avain.png",
         path: "kirjautumiset",
         updated: -1
       },
       {
         title: "Paikkojen määrä kategorioittain",
-        description: "Sitä itseään",
+        description: "Sitä itseään, siirtyy kohta keskimääräinen spotti osioon, kunhan saadaan se tehtyä",
         image: "../images/kategoria.png",
         path: "kategoriat",
         updated: -1
       },
       {
         title: "Kaupunkien spottimäärät",
-        description: "Suomen 10 isointa kaupunkia",
+        description: "Noin 50 suurimman kaupungin/kunnan tilastot. Taulukoita spottimäärästä, sekä asukaslukuun suhteutettua tilastoa.",
         image: "../images/kaupunki.png",
         path: "kaupungit",
         updated: -1
       },
       {
-        title: "Keskimääräinen spotti",
-        description: "Minkälainen spottimetän keskiverto spotti on",
+        title: "Spottien tilastot",
+        description: "Paljon tilastoja sovelluksen paikoista, kuten kategoriajako, yleisin sana nimessä, keskiarvo spotin otsikon pituudesta yms...",
         image: "../images/pinni.png",
         path: "keskiarvospotti",
         className: "todo",
@@ -61,7 +60,7 @@ class Main extends Component {
       },
       {
         title: "Puhelimille asennettujen sovellusten määrä",
-        description: "Android sovelluksen julkaisuhetkestä lähtien.",
+        description: "Dataa Android sovelluksen julkaisuhetkestä lähtien.",
         image: "../images/puhelin.png",
         path: "sovellukset",
         updated: -1
@@ -105,32 +104,33 @@ class Main extends Component {
   render() {
     return (
       <div className="App">
-        <Router>
+        <Router onUpdate={() => window.scrollTo(0, 0)}>
           <Logo></Logo>
           <Switch>
             <Route exact path="/kategoriat">
               {this.getCategoryRoute()}
             </Route>
             <Route exact path="/sovellukset">
-              <h2>
-                Asennuksia Android-laitteilla (Käynnistetty viimeisen 30 päivän
-                aikana)
-              </h2>
-              <PlotChart
-                data={this.state.androidInstallations}
-                xAxisName={"Asennuksia"}
+              <RegisterSignIn
+               data={this.state.androidInstallations}
+               situation="Aktiivisia asennuksia Android-laitteilla"
+               description="Laitteille asennetut viimeisen kuukauden sisällä avatut android-sovellukset. Data on kerätty koko Android-sovelluksen elinkaaren ajalta ja sitä päivitetään sivuille manuaalisesti."
+               xAxisName="Asennuksia"
               />
+
             </Route>
             <Route exact path="/rekisteroitymisia">
               <RegisterSignIn
                 data={this.parseDateData("creationTime")}
                 situation="Rekisteröitymisiä"
-              ></RegisterSignIn>
+                description="Rekisteröityneitä käyttäjiä (ensimmäinen kirjautuminen). Laskelmiin sisältyy kaikki alustat."
+              />
             </Route>
             <Route exact path="/kirjautumiset">
               <RegisterSignIn
                 data={this.parseDateData("lastSignIn")}
                 situation="Viimeisin kirjautuminen"
+                description="Käyttäjien viimeisimmän kirjautumisen ajanhetki. Kaikkien alustojen yhteenlaskettu tilasto."
               ></RegisterSignIn>
             </Route>
             <Route exact path="/kaupungit">
@@ -138,7 +138,6 @@ class Main extends Component {
             </Route>
 
             <Route exact path="*">
-              
               <HomePage listItems={this.state.listItems} />
             </Route>
           </Switch>
@@ -296,13 +295,10 @@ class Main extends Component {
   }
 
   parseCityData() {
-    console.log("Yritetään citydatalle");
-    
     if (!this.state.allData || !this.state.geoData) {
       return;
     }
-    console.log("City datalla");
-    
+
     let topList = [];
     for (let spot in this.state.allData.data) {
       let found = false;

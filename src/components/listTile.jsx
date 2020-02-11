@@ -20,9 +20,9 @@ class ListTile extends Component {
 
         <td>
           <div className="vertical">
-            <span className="listSpan">{this.props.object.title}</span>
+            <span className="listTitle">{this.props.object.title}</span>
 
-            <span className="listanKuvaus">
+            <span className="listDescription">
               {this.props.object.description}
             </span>
           </div>

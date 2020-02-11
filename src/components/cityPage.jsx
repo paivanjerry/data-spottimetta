@@ -1,17 +1,18 @@
 import React, { Component } from "react";
 
 import CategoryChart from "./categoryChart";
+import "../css/graphPage.css";
 
 class CityPage extends Component {
   render() {
     return (
       <div>
-        <h2>Spottien jakautuminen kaupungeittain</h2>
-        <p>
+        <h2 className="graphTitle">Spottien jakautuminen kaupungeittain</h2>
+        <p className="graphDescription">
           Laskettu kaupungit ja kunnat mukaan, joiden asukasluku on yli 20 000.
           Käytetty simppeliä "piirrä 20 km halkaisijan neliö kaupungin ympärille
-          ja tarkasta löytyykö spotti sieltä" -menetelmää. Tällätavoin
-          vierekkäisten kaupunkien spotit saattaa mennä väärälle kaupungille.
+          ja tarkasta löytyykö spotti sieltä" -menetelmää. Eli suomeksi,
+          laskelmat eivät ole tarkkoja.
         </p>
         <CategoryChart
           data={this.props.data}
@@ -19,7 +20,7 @@ class CityPage extends Component {
           xAxisName="Spotteja kaupungissa"
         ></CategoryChart>
 
-        <h2>Asukasluku</h2>
+        <h2 className="m-top">Asukasluku</h2>
         <p>Sama kaupunkien järjestys, asukasluku palkeissa</p>
         <CategoryChart
           data={this.props.data}
@@ -28,10 +29,10 @@ class CityPage extends Component {
           xAxisName="Asukasluku"
         ></CategoryChart>
 
-        <h2>Kaupunkien spottitiheys</h2>
+        <h2 className="m-top">Kaupunkien spottitiheys</h2>
         <p>
-          Kaupungit samassa järjestyksessä kuin aiemmassa kuvaajassa. Laskettu
-          kaavalla 10000*spotit/asukkaat
+          Kaupungit samassa järjestyksessä kuin aiemmissa kuvaajissa. Yksikkönä
+          spottia per 10 000 asukasta.
         </p>
         <CategoryChart
           data={this.getSpotPerCitizen()}

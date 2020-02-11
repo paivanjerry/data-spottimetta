@@ -22,12 +22,12 @@ class list extends Component {
         <table className="list">
           <thead>
             <tr>
-              <th>Kuvake</th>
+              <th className="tableIcon">Kuvake</th>
               <th>Nimi/Kuvaus</th>
-              <th>Viimeisin päivitys</th>
+              <th className="tableUpdated">Päivitetty</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody onClick={this.scrollTop.bind()}>
             {this.state.listTiles.map(tile => (
               <ListTile
                 className={tile.className}
@@ -39,6 +39,9 @@ class list extends Component {
         </table>
       </div>
     );
+  }
+  scrollTop() {
+    window.scrollTo(0, 0);
   }
 
   searchHandler = event => {
@@ -55,7 +58,6 @@ class list extends Component {
     }
     this.setState({ listTiles });
   };
-
 }
 
 export default list;

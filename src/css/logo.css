@@ -1,4 +1,5 @@
-.logo{
-    width: 100vw;
-    max-width: 600px;
+.logo {
+  width: 100vw;
+  max-width: 600px;
+  cursor: pointer;
 }
