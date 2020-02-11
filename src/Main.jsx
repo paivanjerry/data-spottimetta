@@ -6,32 +6,90 @@ import RegisterSignIn from "./components/registerSignIn";
 import "./App.css";
 import axios from "axios";
 import Logo from "./components/logo";
+import plotChart from "./components/plotChart";
 
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
+import PlotChart from "./components/plotChart";
 
 class Main extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    const listItems = [
+      {
+        title: "Rekisteröitymiset",
+        description: "Tarkastele rekisteröitymisten määrää reaaliaikaisesti",
+        image: "../images/register.png",
+        path: "rekisteroitymisia",
+        updated: -1
+      },
+      {
+        title: "Spottien lisääjät",
+        description: "Keskimääräisen käyttäjän spottien lisääminen",
+        image: "../images/lisaajat.png",
+        path: "lisaajat",
+        className: "todo",
+        updated: -1
+      },
+      {
+        title: "Viimeiset kirjautumiset",
+        description: "Tarkastele viimeisiä kirjautumisia",
+        image: "../images/avain.png",
+        path: "kirjautumiset",
+        updated: -1
+      },
+      {
+        title: "Paikkojen määrä kategorioittain",
+        description: "Sitä itseään",
+        image: "../images/kategoria.png",
+        path: "kategoriat",
+        updated: -1
+      },
+      {
+        title: "Kaupunkien spottimäärät",
+        description: "Suomen 10 isointa kaupunkia",
+        image: "../images/kaupunki.png",
+        path: "kaupungit",
+        className: "todo",
+        updated: -1
+      },
+      {
+        title: "Keskimääräinen spotti",
+        description: "Minkälainen spottimetän keskiverto spotti on",
+        image: "../images/pinni.png",
+        path: "keskiarvospotti",
+        className: "todo",
+        updated: -1
+      },
+      {
+        title: "Puhelimille asennettujen sovellusten määrä",
+        description: "Android sovelluksen julkaisuhetkestä lähtien.",
+        image: "../images/puhelin.png",
+        path: "sovellukset",
+        updated: -1
+      }
+    ];
+    this.state = { listItems };
   }
 
   componentDidMount() {
+    this.getDataFromFile();
+
     if (this.state.allData) {
       return;
     }
+
 
     let allData;
 
     if (localStorage.getItem("spottidata")) {
       allData = JSON.parse(localStorage.getItem("spottidata"));
     }
-    // setting allData to null if it wasn't stored today
+    // setting allData to null if it wasn't stored in the past hour
     if (allData && new Date().getTime() > allData.date + 3600000) {
       allData = null;
     }
 
-    // if allData still got value, it means we can use it as valid cache for today
+    // if allData still got value, it means we can use it as valid cache for this hour
     if (allData) {
       console.log("Käytetään jo haettua dataa.");
 
@@ -54,15 +112,25 @@ class Main extends Component {
             <Route exact path="/kategoriat">
               {this.getCategoryRoute()}
             </Route>
+            <Route exact path="/sovellukset">
+              <h2>Asennuksia Android-laitteilla (Käynnistetty viimeisen 30 päivän aikana)</h2>
+              <PlotChart data={this.state.androidInstallations} xAxisName={"Asennuksia"}/>
+            </Route>
             <Route exact path="/rekisteroitymisia">
-              <RegisterSignIn data={this.parseDateData("creationTime")} situation="Rekisteröitymisiä"></RegisterSignIn>
+              <RegisterSignIn
+                data={this.parseDateData("creationTime")}
+                situation="Rekisteröitymisiä"
+              ></RegisterSignIn>
             </Route>
             <Route exact path="/kirjautumiset">
-              <RegisterSignIn data={this.parseDateData("lastSignIn")} situation="Viimeisin kirjautuminen"></RegisterSignIn>
+              <RegisterSignIn
+                data={this.parseDateData("lastSignIn")}
+                situation="Viimeisin kirjautuminen"
+              ></RegisterSignIn>
             </Route>
 
             <Route exact path="*">
-              <Home />
+              <HomePage listItems={this.state.listItems} />
             </Route>
           </Switch>
         </Router>
@@ -83,9 +151,7 @@ class Main extends Component {
 
     this.setState({ allData });
   }
-  Home() {
-    return <HomePage></HomePage>;
-  }
+
   getCategoryRoute() {
     if (!this.state.allData) {
       return;
@@ -153,7 +219,6 @@ class Main extends Component {
       for (let i = 0; i < parsedData.length; i++) {
         const element = parsedData[i];
 
-
         if (element["date"] != null && element["date"] === date) {
           element["amount"]++;
           found = true;
@@ -168,30 +233,58 @@ class Main extends Component {
         };
         parsedData.push(object);
       }
-
-      /*
-      birthday.getFullYear();      // 1980
-      birthday.getMonth();         // 6
-      birthday.getDate(); 
-
-      var date = new Date().toLocaleDateString().replace(/\//g,".");
-      date.replace(/\//g,".");
-      
-      
-      */
     }
     parsedData.sort(dateCompare);
 
     return parsedData;
   }
+
+  getDataFromFile() {
+    const file = require("./data/androidActiveDownloads.csv");
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = () => {
+      if (rawFile.readyState === 4) {
+        if (rawFile.status === 200 || rawFile.status === 0) {
+          var allText = rawFile.responseText;
+
+          console.log(allText.split("\n").length);
+          let rows = allText.split("\n");
+
+          let androidInstallations = [];
+          for (let i = 4; i < rows.length - 2; i++) {
+            const element = rows[i];
+            const timeParts = element.split(",")[1].split("-");
+              const listTime =
+                timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
+
+            androidInstallations.push({
+              date: listTime,
+              amount: parseInt(element.split(",")[3].replace("-","0"))
+            });
+
+            // Last row -> take the date and show in the list
+            if (i === rows.length - 3) {
+              const listItems = [...this.state.listItems];
+              for (let index = 0; index < listItems.length; index++) {
+                const element = listItems[index];
+                if (element.path === "sovellukset") {
+                  listItems[index].updated = listTime;
+                  this.setState({ listItems, androidInstallations });
+                  continue;
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    rawFile.send(null);
+  }
+
 } // class Main
-function Home() {
-  return <HomePage></HomePage>;
-}
 
 function dateCompare(a, b) {
-
-
   const aSplit = a.date.split(".");
   const bSplit = b.date.split(".");
   // Backward loop, compare year, then month, then day
@@ -199,9 +292,6 @@ function dateCompare(a, b) {
     if (aSplit[i] !== bSplit[i]) {
       return parseInt(aSplit[i]) > parseInt(bSplit[i]) ? 1 : -1;
     }
-
-
-     
   }
 }
 

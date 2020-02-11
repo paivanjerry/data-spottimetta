@@ -4,61 +4,16 @@ import SearchBar from "./searchBar";
 import "../css/list.css";
 
 class list extends Component {
+  componentDidMount() {
+    //this.getDataFromFile();
+  }
+
   constructor(props) {
     super(props);
-    let allListTiles = [
-      {
-        title: "Rekisteröitymiset",
-        description: "Tarkastele rekisteröitymisten määrää reaaliaikaisesti",
-        image: "../images/register.png",
-        path: "rekisteroitymisia"
-      },
-      {
-        title: "Spottien lisääjät",
-        description: "Keskimääräisen käyttäjän spottien lisääminen",
-        image: "../images/lisaajat.png",
-        path: "lisaajat",
-        className: "todo"
-      },
-      {
-        title: "Viimeiset kirjautumiset",
-        description: "Tarkastele viimeisiä kirjautumisia",
-        image: "../images/avain.png",
-        path: "kirjautumiset"
-
-      },
-      {
-        title: "Paikkojen määrä kategorioittain",
-        description: "Sitä itseään",
-        image: "../images/kategoria.png",
-        path: "kategoriat"
-      },
-      {
-        title: "Kaupunkien spottimäärät",
-        description: "Suomen 10 isointa kaupunkia",
-        image: "../images/kaupunki.png",
-        path: "kaupungit",
-        className: "todo"
-      },
-      {
-        title: "Keskimääräinen spotti",
-        description: "Minkälainen spottimetän keskiverto spotti on",
-        image: "../images/pinni.png",
-        path: "keskiarvospotti",
-        className: "todo"
-      },
-      {
-        title: "Puhelimille asennettujen sovellusen määrä",
-        description: "Android sovelluksen julkaisuhetkestä lähtien.",
-        image: "../images/puhelin.png",
-        path: "sovellukset",
-        className: "todo"
-      }
-    ];
 
     this.state = {
-      allListTiles: allListTiles,
-      listTiles: [...allListTiles]
+      
+      listTiles: [...this.props.listItems]
     };
   }
   render() {
@@ -73,11 +28,10 @@ class list extends Component {
               <th>Viimeisin päivitys</th>
             </tr>
           </thead>
-          <tbody> 
+          <tbody>
             {this.state.listTiles.map(tile => (
               <ListTile
                 className={tile.className}
-                
                 object={tile}
                 key={tile.title}
               ></ListTile>
@@ -89,9 +43,11 @@ class list extends Component {
   }
 
   searchHandler = event => {
+    console.log(this.state.androidInstallations);
+    
     let listTiles = [];
     let typedText = event.target.value.toLowerCase();
-    const allListTiles = [...this.state.allListTiles];
+    const allListTiles = [...this.props.listItems];
     for (let i = 0; i < allListTiles.length; i++) {
       const element = allListTiles[i];
       if (element.title.toLowerCase().includes(typedText)) {
@@ -100,6 +56,49 @@ class list extends Component {
     }
     this.setState({ listTiles });
   };
+
+  getDataFromFile() {
+    const file = require("../data/androidActiveDownloads.csv");
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = () => {
+      if (rawFile.readyState === 4) {
+        if (rawFile.status === 200 || rawFile.status === 0) {
+          var allText = rawFile.responseText;
+
+          console.log(allText.split("\n").length);
+          let rows = allText.split("\n");
+
+          let androidInstallations = [];
+          for (let i = 4; i < rows.length - 2; i++) {
+            const element = rows[i];
+            const timeParts = element.split(",")[1].split("-");
+              const listTime =
+                timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
+
+            androidInstallations.push({
+              date: listTime,
+              amount: parseInt(element.split(",")[3].replace("-","0"))
+            });
+
+            // Last row -> take the date and show in the list
+            if (i === rows.length - 3) {
+              const listTiles = [...this.state.listTiles];
+              for (let index = 0; index < listTiles.length; index++) {
+                const element = listTiles[index];
+                if (element.path === "sovellukset") {
+                  listTiles[index].updated = listTime;
+                  this.setState({ listTiles, androidInstallations });
+                  continue;
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    rawFile.send(null);
+  }
 }
 
 export default list;

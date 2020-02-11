@@ -21,7 +21,7 @@ class ListTile extends Component {
         </td> 
  
         <td>
-          <span> Reeaaaliaikaainen</span>
+          <span>{this.props.object.updated === -1 ? "Nyt" : this.props.object.updated}</span>
         </td>
       </tr>
     );
