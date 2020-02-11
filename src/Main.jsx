@@ -6,14 +6,14 @@ import RegisterSignIn from "./components/registerSignIn";
 import "./App.css";
 import axios from "axios";
 import Logo from "./components/logo";
-import plotChart from "./components/plotChart";
-
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import PlotChart from "./components/plotChart";
+import CityPage from "./components/cityPage";
+import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
 
 class Main extends Component {
   constructor(props) {
     super(props);
+
     const listItems = [
       {
         title: "Rekisteröitymiset",
@@ -49,7 +49,6 @@ class Main extends Component {
         description: "Suomen 10 isointa kaupunkia",
         image: "../images/kaupunki.png",
         path: "kaupungit",
-        className: "todo",
         updated: -1
       },
       {
@@ -73,11 +72,11 @@ class Main extends Component {
 
   componentDidMount() {
     this.getDataFromFile();
+    this.getGeoDataFromFile();
 
     if (this.state.allData) {
       return;
     }
-
 
     let allData;
 
@@ -106,15 +105,21 @@ class Main extends Component {
   render() {
     return (
       <div className="App">
-        <Logo></Logo>
         <Router>
+          <Logo></Logo>
           <Switch>
             <Route exact path="/kategoriat">
               {this.getCategoryRoute()}
             </Route>
             <Route exact path="/sovellukset">
-              <h2>Asennuksia Android-laitteilla (Käynnistetty viimeisen 30 päivän aikana)</h2>
-              <PlotChart data={this.state.androidInstallations} xAxisName={"Asennuksia"}/>
+              <h2>
+                Asennuksia Android-laitteilla (Käynnistetty viimeisen 30 päivän
+                aikana)
+              </h2>
+              <PlotChart
+                data={this.state.androidInstallations}
+                xAxisName={"Asennuksia"}
+              />
             </Route>
             <Route exact path="/rekisteroitymisia">
               <RegisterSignIn
@@ -128,8 +133,12 @@ class Main extends Component {
                 situation="Viimeisin kirjautuminen"
               ></RegisterSignIn>
             </Route>
+            <Route exact path="/kaupungit">
+              <CityPage data={this.parseCityData()}></CityPage>
+            </Route>
 
             <Route exact path="*">
+              
               <HomePage listItems={this.state.listItems} />
             </Route>
           </Switch>
@@ -248,19 +257,18 @@ class Main extends Component {
         if (rawFile.status === 200 || rawFile.status === 0) {
           var allText = rawFile.responseText;
 
-          console.log(allText.split("\n").length);
           let rows = allText.split("\n");
 
           let androidInstallations = [];
           for (let i = 4; i < rows.length - 2; i++) {
             const element = rows[i];
             const timeParts = element.split(",")[1].split("-");
-              const listTime =
-                timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
+            const listTime =
+              timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
 
             androidInstallations.push({
               date: listTime,
-              amount: parseInt(element.split(",")[3].replace("-","0"))
+              amount: parseInt(element.split(",")[3].replace("-", "0"))
             });
 
             // Last row -> take the date and show in the list
@@ -282,6 +290,61 @@ class Main extends Component {
     rawFile.send(null);
   }
 
+  getGeoDataFromFile() {
+    const file = require("./data/parsedgeojson.json");
+    this.setState({ geoData: file });
+  }
+
+  parseCityData() {
+    console.log("Yritetään citydatalle");
+    
+    if (!this.state.allData || !this.state.geoData) {
+      return;
+    }
+    console.log("City datalla");
+    
+    let topList = [];
+    for (let spot in this.state.allData.data) {
+      let found = false;
+      const spotElement = this.state.allData.data[spot];
+      const lat = spotElement.LAT;
+      const lon = spotElement.LON;
+      for (let i = 0; i < this.state.geoData.length; i++) {
+        const element = this.state.geoData[i];
+
+        if (
+          // Spot found in some city
+          element.LAT - lat < 0.16 &&
+          element.LAT - lat > -0.16 &&
+          element.LON - lon < 0.16 &&
+          element.LON - lon > -0.16
+        ) {
+          for (let index = 0; index < topList.length; index++) {
+            const topListElement = topList[index];
+            if (topListElement.city === element.kaupunki) {
+              topListElement.amount++;
+              found = true;
+              continue;
+            }
+          }
+          if (!found) {
+            // Not found. Initialize the object
+            let object = {
+              city: element.kaupunki,
+              amount: 0,
+              population: element.asukasLuku
+            };
+            topList.push(object);
+          }
+
+          break;
+        }
+      }
+    }
+    topList.sort((a, b) => (a.amount < b.amount ? 1 : -1));
+
+    return topList;
+  }
 } // class Main
 
 function dateCompare(a, b) {
