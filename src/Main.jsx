@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import HomePage from "./components/homePage";
 import Footer from "./components/footer";
-import Categories from "./components/categories";
 import RegisterSignIn from "./components/registerSignIn";
+import SpotInfo from "./components/spotInfo";
 import "./App.css";
 import axios from "axios";
 import Logo from "./components/logo";
@@ -23,7 +23,8 @@ class Main extends Component {
       },
       {
         title: "Spottien lisääjät",
-        description: "Käyttäjien toimintoihin liittyviä tilastoja. Esim spotteja lisänneet käyttäjät ja niiden jakauma.",
+        description:
+          "Käyttäjien toimintoihin liittyviä tilastoja. Esim spotteja lisänneet käyttäjät ja niiden jakauma.",
         image: "../images/lisaajat.png",
         path: "lisaajat",
         className: "todo",
@@ -36,26 +37,21 @@ class Main extends Component {
         path: "kirjautumiset",
         updated: -1
       },
-      {
-        title: "Paikkojen määrä kategorioittain",
-        description: "Sitä itseään, siirtyy kohta keskimääräinen spotti osioon, kunhan saadaan se tehtyä",
-        image: "../images/kategoria.png",
-        path: "kategoriat",
-        updated: -1
-      },
+
       {
         title: "Kaupunkien spottimäärät",
-        description: "Noin 50 suurimman kaupungin/kunnan tilastot. Taulukoita spottimäärästä, sekä asukaslukuun suhteutettua tilastoa.",
+        description:
+          "Noin 50 suurimman kaupungin/kunnan tilastot. Taulukoita spottimäärästä, sekä asukaslukuun suhteutettua tilastoa.",
         image: "../images/kaupunki.png",
         path: "kaupungit",
         updated: -1
       },
       {
         title: "Spottien tilastot",
-        description: "Paljon tilastoja sovelluksen paikoista, kuten kategoriajako, yleisin sana nimessä, keskiarvo spotin otsikon pituudesta yms...",
+        description:
+          "Paljon tilastoja sovelluksen paikoista, kuten kategoriajako, yleisin sana nimessä, keskiarvo spotin otsikon pituudesta yms...",
         image: "../images/pinni.png",
-        path: "keskiarvospotti",
-        className: "todo",
+        path: "spotit",
         updated: -1
       },
       {
@@ -89,13 +85,13 @@ class Main extends Component {
 
     // if allData still got value, it means we can use it as valid cache for this hour
     if (allData) {
-      console.log("Käytetään jo haettua dataa.");
+      console.log("No need to fetch new data");
 
       this.setState({
         allData
       });
     } else {
-      console.log("Ny karkas hakee uutta requestia");
+      console.log("Goin' to get the fresh data");
 
       this.getData();
     }
@@ -107,18 +103,15 @@ class Main extends Component {
         <Router onUpdate={() => window.scrollTo(0, 0)}>
           <Logo></Logo>
           <Switch>
-            <Route exact path="/kategoriat">
-              {this.getCategoryRoute()}
-            </Route>
             <Route exact path="/sovellukset">
               <RegisterSignIn
-               data={this.state.androidInstallations}
-               situation="Aktiivisia asennuksia Android-laitteilla"
-               description="Laitteille asennetut viimeisen kuukauden sisällä avatut android-sovellukset. Data on kerätty koko Android-sovelluksen elinkaaren ajalta ja sitä päivitetään sivuille manuaalisesti."
-               xAxisName="Asennuksia"
+                data={this.state.androidInstallations}
+                situation="Aktiivisia asennuksia Android-laitteilla"
+                description="Laitteille asennetut viimeisen kuukauden sisällä avatut android-sovellukset. Data on kerätty koko Android-sovelluksen elinkaaren ajalta ja sitä päivitetään sivuille manuaalisesti."
+                xAxisName="Asennuksia"
               />
-
             </Route>
+
             <Route exact path="/rekisteroitymisia">
               <RegisterSignIn
                 data={this.parseDateData("creationTime")}
@@ -126,6 +119,11 @@ class Main extends Component {
                 description="Rekisteröityneitä käyttäjiä (ensimmäinen kirjautuminen). Laskelmiin sisältyy kaikki alustat."
               />
             </Route>
+
+            <Route exact path="/spotit">
+              {this.getSpotRoute()}
+            </Route>
+
             <Route exact path="/kirjautumiset">
               <RegisterSignIn
                 data={this.parseDateData("lastSignIn")}
@@ -133,6 +131,7 @@ class Main extends Component {
                 description="Käyttäjien viimeisimmän kirjautumisen ajanhetki. Kaikkien alustojen yhteenlaskettu tilasto."
               ></RegisterSignIn>
             </Route>
+
             <Route exact path="/kaupungit">
               <CityPage data={this.parseCityData()}></CityPage>
             </Route>
@@ -160,24 +159,66 @@ class Main extends Component {
     this.setState({ allData });
   }
 
-  getCategoryRoute() {
+  getSpotRoute() {
     if (!this.state.allData) {
       return;
     }
-    let data = this.parseCategoryData();
-    return <Categories data={data}></Categories>;
+    let parsedData = this.parseSpotData();
+
+    return (
+      <SpotInfo
+        categoryData={parsedData.data}
+        spotAmount={Object.keys(this.state.allData.data).length}
+        imagesAmount={parsedData.imagesAmount}
+        commentedSpots={parsedData.commentedSpots}
+        noImages={parsedData.noImages}
+        commentsAmount={parsedData.commentsAmount}
+        avgLat={parsedData.avgLat}
+        avgLon={parsedData.avgLon}
+      ></SpotInfo>
+    );
   }
-  parseCategoryData() {
+  parseSpotData() {
     // Loop the data
     //    Loop the stored category data
     //        if category found in category data -> append category data counter
     //    Category not found in category data -> Initialize the category with counter of 0
 
     let categoryData = [];
+    let imagesAmount = 0;
+    let commentedSpots = 0;
+    let noImages = 0;
+    let commentsAmount = 0;
+    let avgLat = 0;
+    let avgLon = 0;
 
+    let avgCounter = 1;
     for (let spot in this.state.allData.data) {
       let category = this.state.allData.data[spot]["TYYPPI"];
       let found = false;
+
+      // Count the images
+      let images = this.state.allData.data[spot]["KUVAT"];
+      if (images !== null && images !== undefined && images !== "") {
+        imagesAmount += images.split(" ").length;
+      } else {
+        noImages++;
+      }
+      let lat = parseFloat(this.state.allData.data[spot]["LAT"]);
+      let lon = parseFloat(this.state.allData.data[spot]["LON"]);
+      // Update the average coordinates
+      avgLat = avgLat + (lat - avgLat) / avgCounter;
+      avgLon = avgLon + (lon - avgLon) / avgCounter;
+
+      avgCounter++;
+
+      // Count the comments
+      let comments = this.state.allData.data[spot]["KOMMENTIT"];
+      if (comments !== null && comments !== undefined && comments !== "") {
+        commentedSpots++;
+        commentsAmount += comments.split("\n\n").length;
+      }
+
       for (let i = 0; i < categoryData.length; i++) {
         const element = categoryData[i];
         if (element["category"] != null && element["category"] === category) {
@@ -195,9 +236,18 @@ class Main extends Component {
         categoryData.push(object);
       }
     }
+
     // Parsing done. Sort the data.
     categoryData.sort((a, b) => (a.amount > b.amount ? 1 : -1));
-    return categoryData;
+    return {
+      data: categoryData,
+      imagesAmount: imagesAmount,
+      commentedSpots: commentedSpots,
+      noImages: noImages,
+      commentsAmount: commentsAmount,
+      avgLat: avgLat,
+      avgLon: avgLon
+    };
   } //parseCategoryData()
 
   parseDateData(situation) {
@@ -264,14 +314,20 @@ class Main extends Component {
             const timeParts = element.split(",")[1].split("-");
             const listTime =
               timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
+            let amount = parseInt(element.split(",")[3].replace("-", "0"));
 
-            androidInstallations.push({
-              date: listTime,
-              amount: parseInt(element.split(",")[3].replace("-", "0"))
-            });
+            if (amount !== 0 || i < rows.length - 10) {
+              androidInstallations.push({
+                date: listTime,
+                amount: parseInt(element.split(",")[3].replace("-", "0"))
+              });
+            }
 
             // Last row -> take the date and show in the list
-            if (i === rows.length - 3) {
+            if (
+              rows[i + 1] === undefined ||
+              rows[i + 2].split(",")[3] === "-"
+            ) {
               const listItems = [...this.state.listItems];
               for (let index = 0; index < listItems.length; index++) {
                 const element = listItems[index];

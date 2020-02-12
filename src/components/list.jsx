@@ -45,8 +45,6 @@ class list extends Component {
   }
 
   searchHandler = event => {
-    console.log(this.state.androidInstallations);
-
     let listTiles = [];
     let typedText = event.target.value.toLowerCase();
     const allListTiles = [...this.props.listItems];

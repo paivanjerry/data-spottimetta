@@ -14,6 +14,7 @@ class CityPage extends Component {
           ja tarkasta löytyykö spotti sieltä" -menetelmää. Eli suomeksi,
           laskelmat eivät ole tarkkoja.
         </p>
+        <a href="https://datajournalismi.blogspot.com/2013/03/suomen-kuntien-koordinaattitiedot.html">Kuntien sijaintien lähde</a>
         <CategoryChart
           data={this.props.data}
           dataKey="city"
@@ -22,6 +23,7 @@ class CityPage extends Component {
 
         <h2 className="m-top">Asukasluku</h2>
         <p>Sama kaupunkien järjestys, asukasluku palkeissa</p>
+        <a href="https://www.kuntaliitto.fi/tilastot-ja-julkaisut/kaupunkien-ja-kuntien-lukumaarat-ja-vaestotiedot">Lähde</a>
         <CategoryChart
           data={this.props.data}
           yDataKey="population"
