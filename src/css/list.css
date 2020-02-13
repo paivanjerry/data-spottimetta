@@ -6,6 +6,27 @@ table {
   margin: auto;
   cursor: pointer;
 }
+.listTable {
+  width: 90%;
+  max-width: 900px;
+}
+@media (orientation: portrait) {
+  .listTable {
+    width: 98%;
+  }
+  .listTitle {
+    font-size: 14pt !important;
+  }
+  .listDescription {
+    font-size: 10pt !important;
+  }
+  thead {
+    font-size: 10pt;
+  }
+  .tableUpdated {
+    font-size: 10pt;
+  }
+}
 
 input[type="text"]::placeholder {
   color: rgb(134, 134, 134);
@@ -46,9 +67,6 @@ input[type="text"]:hover {
   color: rgb(109, 109, 109);
   padding-bottom: 0px;
 }
-.itemTitle {
-  font-family: "Lilita One", cursive;
-}
 
 td,
 th {
@@ -61,18 +79,24 @@ th {
 }
 
 .listImage {
-  width: 80px;
-  margin: 10px;
+  width: 10vw;
+  max-width: 80px;
+}
+.iconHeader {
+  width: 10vw;
+  max-width: 80px;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 .tableUpdated {
-  width: 80px;
+  width: 10vw;
+  max-width: 80px;
 }
 
 .listTitle {
   display: block;
   width: 100%;
   font-size: 17pt;
-
   font-family: "Lilita One", cursive;
 }
 .tableRow {

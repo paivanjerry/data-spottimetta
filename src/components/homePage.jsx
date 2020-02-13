@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import List from "./list";
+import "../App.css";
 
 class HomePage extends Component {
   state = {};

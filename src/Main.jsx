@@ -29,7 +29,6 @@ class Main extends Component {
           "Käyttäjien toimintoihin liittyviä tilastoja. Esim spotteja lisänneet käyttäjät ja niiden jakauma.",
         image: "../images/lisaajat.png",
         path: "lisaajat",
-        className: "todo",
         updated: -1
       },
       {
@@ -94,14 +93,10 @@ class Main extends Component {
 
     // if allData still got value, it means we can use it as valid cache for this hour
     if (allData) {
-      console.log("No need to fetch new data");
-
       this.setState({
         allData
       });
     } else {
-      console.log("Goin' to get the fresh data");
-
       this.getData();
     }
   }
@@ -116,7 +111,7 @@ class Main extends Component {
               <RegisterSignIn
                 data={this.state.androidInstallations}
                 situation="Aktiivisia asennuksia Android-laitteilla"
-                description="Laitteille asennetut viimeisen kuukauden sisällä avatut android-sovellukset. Data on kerätty koko Android-sovelluksen elinkaaren ajalta ja sitä päivitetään sivuille manuaalisesti."
+                description="Laitteille asennetut viimeisen kuukauden sisällä avatut Android-sovellukset. Data on kerätty koko Android-sovelluksen elinkaaren ajalta ja sitä päivitetään sivuille manuaalisesti."
                 xAxisName="Asennuksia"
               />
             </Route>
@@ -129,9 +124,11 @@ class Main extends Component {
               />
             </Route>
 
-            <Route exact path="/spotit">
-              {this.getSpotRoute()}
-            </Route>
+            <Route
+              exact
+              path="/spotit"
+              render={() => this.getSpotRoute()}
+            ></Route>
 
             <Route exact path="/kirjautumiset">
               <RegisterSignIn
@@ -176,85 +173,71 @@ class Main extends Component {
     this.setState({ allData });
   }
 
-  getUsersComponent(){
+  getUsersComponent() {
     if (!this.state.allData) {
       return;
     }
     let topList = {};
     let idList = [];
     for (let spot in this.state.allData.data) {
-      if (this.state.allData.data[spot]["ID"] !== null && this.state.allData.data[spot]["ID"] !== undefined ){
+      if (
+        this.state.allData.data[spot]["ID"] !== null &&
+        this.state.allData.data[spot]["ID"] !== undefined
+      ) {
         // Ei oo vanhan spottimettän spotti
         idList.push(this.state.allData.data[spot]["ID"]);
-        }
-
-      else {
+      } else {
         // Spot from old skatemap - no creator's ID
         idList.push(" ");
       }
-    }// Looped list of id's
-    console.log(idList);
-    
-    
+    } // Looped list of id's
 
-    for(let i = 0 ; i < idList.length ; i++){
+    for (let i = 0; i < idList.length; i++) {
       let id = idList[i];
 
-      if(topList[id] !== null && topList[idList[i]] !== undefined){
+      if (topList[id] !== null && topList[idList[i]] !== undefined) {
         let amount = topList[id];
-        amount +=1;
+        amount += 1;
         topList[id] = amount;
+      } else {
+        topList[id] = 1;
+      }
     }
-    else {
-      topList[id] = 1;
-    }
-    
-    }
-    
 
     let orderedTopList = this.sortProperties(topList);
     for (let i = 0; i < orderedTopList.length; i++) {
       const topListElement = orderedTopList[i];
-      topListElement[0] = this.state.allData.nimimerkit[topListElement[0]] ? this.state.allData.nimimerkit[topListElement[0]] : "-"
-      
+      topListElement[0] = this.state.allData.nimimerkit[topListElement[0]]
+        ? this.state.allData.nimimerkit[topListElement[0]]
+        : "-";
     }
-    
-    
+
     return (
-      <Users 
-      topList={orderedTopList}
-      totalUsers={this.state.allData.users.length}
-      
+      <Users
+        topList={orderedTopList}
+        totalUsers={this.state.allData.users.length}
       />
-
-
     );
-    
-
   }
 
-  sortProperties(obj)
-{
-
-	let sortable=[];
-	for(let key in obj){
-		if(obj.hasOwnProperty(key)){
-			sortable.push([key, obj[key]]);
+  sortProperties(obj) {
+    let sortable = [];
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        sortable.push([key, obj[key]]);
+      }
+      sortable.sort(function(a, b) {
+        return b[1] - a[1];
+      });
     }
-		sortable.sort(function(a, b)
-		{
-			return b[1]-a[1];
-    });
+    return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
   }
-	return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
-}
 
   getSpotRoute() {
     if (!this.state.allData) {
       return;
     }
     let parsedData = this.parseSpotData();
-    console.log(parsedData.wordCounter);
 
     return (
       <SpotInfo
@@ -271,9 +254,6 @@ class Main extends Component {
       ></SpotInfo>
     );
   }
-
-
-
 
   parseSpotData() {
     // Loop the data
@@ -329,9 +309,6 @@ class Main extends Component {
         ) {
           const element = wordCounter[counterIndex];
 
-          if (element.toLowerCase === "skeittiparkki") {
-            console.log("PARKKI");
-          }
           if (element[0].toLowerCase() === word.toLowerCase()) {
             if (word.length < 2) {
               continue;
@@ -431,51 +408,40 @@ class Main extends Component {
   }
 
   getDataFromFile() {
-    const file = require("./data/androidActiveDownloads.csv");
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = () => {
-      if (rawFile.readyState === 4) {
-        if (rawFile.status === 200 || rawFile.status === 0) {
-          var allText = rawFile.responseText;
+    fetch(`${process.env.PUBLIC_URL}/androidActiveDownloads.csv`)
+      .then(r => r.text())
+      .then(allText => {
+        let rows = allText.split("\n");
 
-          let rows = allText.split("\n");
+        let androidInstallations = [];
+        for (let i = 4; i < rows.length - 2; i++) {
+          const element = rows[i];
+          const timeParts = element.split(",")[1].split("-");
+          const listTime =
+            timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
+          let amount = parseInt(element.split(",")[3].replace("-", "0"));
 
-          let androidInstallations = [];
-          for (let i = 4; i < rows.length - 2; i++) {
-            const element = rows[i];
-            const timeParts = element.split(",")[1].split("-");
-            const listTime =
-              timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
-            let amount = parseInt(element.split(",")[3].replace("-", "0"));
+          if (amount !== 0 || i < rows.length - 10) {
+            androidInstallations.push({
+              date: listTime,
+              amount: parseInt(element.split(",")[3].replace("-", "0"))
+            });
+          }
 
-            if (amount !== 0 || i < rows.length - 10) {
-              androidInstallations.push({
-                date: listTime,
-                amount: parseInt(element.split(",")[3].replace("-", "0"))
-              });
-            }
-
-            // Last row -> take the date and show in the list
-            if (
-              rows[i + 1] === undefined ||
-              rows[i + 2].split(",")[3] === "-"
-            ) {
-              const listItems = [...this.state.listItems];
-              for (let index = 0; index < listItems.length; index++) {
-                const element = listItems[index];
-                if (element.path === "sovellukset") {
-                  listItems[index].updated = listTime;
-                  this.setState({ listItems, androidInstallations });
-                  continue;
-                }
+          // Last row -> take the date and show in the list
+          if (rows[i + 1] === undefined || rows[i + 2].split(",")[3] === "-") {
+            const listItems = [...this.state.listItems];
+            for (let index = 0; index < listItems.length; index++) {
+              const element = listItems[index];
+              if (element.path === "sovellukset") {
+                listItems[index].updated = listTime;
+                this.setState({ listItems, androidInstallations });
+                continue;
               }
             }
           }
         }
-      }
-    };
-    rawFile.send(null);
+      });
   }
 
   getGeoDataFromFile() {

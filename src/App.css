@@ -12,10 +12,17 @@ p {
   -moz-user-select: text;
   -ms-user-select: text;
   user-select: text;
-  margin: 5px;
 }
-h2{
-  margin: 5px;
+.bodyText {
+  width: 90%;
+  max-width: 700px;
+  margin: auto;
+}
+h2 {
+  display: block;
+  width: 100%;
+  font-size: xx-large;
+  font-family: "Lilita One", cursive;
 }
 
 .App {
@@ -27,4 +34,7 @@ h2{
 }
 .m50t {
   margin-top: 50px;
+}
+.wrap {
+  overflow-wrap: break-word;
 }

@@ -2,19 +2,22 @@ import React, { Component } from "react";
 
 import CategoryChart from "./categoryChart";
 import "../css/graphPage.css";
+import "../App.css";
 
 class CityPage extends Component {
   render() {
     return (
       <div>
-        <h2 className="graphTitle">Spottien jakautuminen kaupungeittain</h2>
-        <p className="graphDescription">
+        <h2 className="bodyText">Spottien jakautuminen kaupungeittain</h2>
+        <p className="bodyText">
           Laskettu kaupungit ja kunnat mukaan, joiden asukasluku on yli 20 000.
           Käytetty simppeliä "piirrä 20 km halkaisijan neliö kaupungin ympärille
           ja tarkasta löytyykö spotti sieltä" -menetelmää. Eli suomeksi,
           laskelmat eivät ole tarkkoja.
         </p>
-        <a href="https://datajournalismi.blogspot.com/2013/03/suomen-kuntien-koordinaattitiedot.html">Kuntien sijaintien lähde</a>
+        <a href="https://datajournalismi.blogspot.com/2013/03/suomen-kuntien-koordinaattitiedot.html">
+          Kuntien sijaintien lähde
+        </a>
         <CategoryChart
           data={this.props.data}
           dataKey="city"
@@ -22,8 +25,12 @@ class CityPage extends Component {
         ></CategoryChart>
 
         <h2 className="m-top">Asukasluku</h2>
-        <p>Sama kaupunkien järjestys, asukasluku palkeissa</p>
-        <a href="https://www.kuntaliitto.fi/tilastot-ja-julkaisut/kaupunkien-ja-kuntien-lukumaarat-ja-vaestotiedot">Lähde</a>
+        <p className="bodyText">
+          Sama kaupunkien järjestys, asukasluku palkeissa
+        </p>
+        <a href="https://www.kuntaliitto.fi/tilastot-ja-julkaisut/kaupunkien-ja-kuntien-lukumaarat-ja-vaestotiedot">
+          Lähde
+        </a>
         <CategoryChart
           data={this.props.data}
           yDataKey="population"
@@ -32,7 +39,7 @@ class CityPage extends Component {
         ></CategoryChart>
 
         <h2 className="m-top">Kaupunkien spottitiheys</h2>
-        <p>
+        <p className="bodyText">
           Kaupungit samassa järjestyksessä kuin aiemmissa kuvaajissa. Yksikkönä
           spottia per 10 000 asukasta.
         </p>

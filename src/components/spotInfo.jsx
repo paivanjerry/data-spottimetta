@@ -5,7 +5,10 @@ import DataTable from "./dataTable";
 import CategoryChart from "./categoryChart";
 
 class SpotInfo extends Component {
-  state = { distancedSpots: "Ei laskettu" };
+  constructor(props) {
+    super(props);
+    this.state = { distancedSpots: "Ei laskettu" };
+  }
 
   componentDidMount() {
     let startValue = 50;
@@ -20,7 +23,6 @@ class SpotInfo extends Component {
     return (
       <div>
         <h2 className="m20b">Spottien tilastoja</h2>
-
         <DataTable
           data={this.formatSpotStatistics()}
           leftTitle="Tilasto"
@@ -91,8 +93,6 @@ class SpotInfo extends Component {
     );
   }
   formatSpotStatistics() {
-    console.log("FORMAATTIA");
-
     let finalList = [];
     finalList.push(["Spottien määrä", this.props.spotAmount]);
     finalList.push(["Kuvia spoteissa yhteensä", this.props.imagesAmount]);
@@ -183,8 +183,6 @@ class SpotInfo extends Component {
     this.setState({ coordList: allCoords });
   }
   countDistancedSpotsList() {
-    console.log(this.state.sliderValue);
-
     this.setState({ distancedSpots: "Lasketaan" });
 
     let count = 0;

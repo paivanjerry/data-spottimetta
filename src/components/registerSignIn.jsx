@@ -6,8 +6,8 @@ class RegisterSignIn extends Component {
     // Rekisteröitymisiä
     return (
       <div>
-        <h2>{this.props.situation}</h2>
-        <p className="graphDescription">{this.props.description}</p>
+        <h2 className="bodyText">{this.props.situation}</h2>
+        <p className="graphDescription bodyText">{this.props.description}</p>
         <PlotChart
           data={this.props.data}
           xAxisName={this.props.situation}

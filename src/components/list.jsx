@@ -19,11 +19,11 @@ class list extends Component {
           <Link id={tile.path} to={"/" + tile.path} key={tile.path}></Link>
         ))}
         <SearchBar onChange={this.searchHandler}></SearchBar>
-        <table className="list">
+        <table className="listTable">
           <thead>
             <tr>
-              <th className="tableIcon">Kuvake</th>
-              <th>Nimi/Kuvaus</th>
+              <th className="iconHeader">Kuvake</th>
+              <th className="tableCenter">Nimi/Kuvaus</th>
               <th className="tableUpdated">Päivitetty</th>
             </tr>
           </thead>

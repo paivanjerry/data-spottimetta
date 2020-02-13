@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "../css/list.css";
+import "../App.css";
 
 class ListTile extends Component {
   render() {
@@ -20,7 +21,9 @@ class ListTile extends Component {
 
         <td>
           <div className="vertical">
-            <span className="listTitle">{this.props.object.title}</span>
+            <span className="listTitle tableCenter">
+              {this.props.object.title}
+            </span>
 
             <span className="listDescription">
               {this.props.object.description}
@@ -29,7 +32,7 @@ class ListTile extends Component {
         </td>
 
         <td>
-          <span>
+          <span className="tableUpdated">
             {this.props.object.updated === -1
               ? "Nyt"
               : this.props.object.updated}

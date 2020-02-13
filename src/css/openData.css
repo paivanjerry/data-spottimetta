@@ -26,6 +26,7 @@
 .dataBox p {
   text-align: justify;
   color: rgb(100, 100, 100);
+  width: auto;
 }
 .dataBox:hover p {
   color: rgb(0, 0, 0);
