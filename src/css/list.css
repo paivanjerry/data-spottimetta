@@ -1,4 +1,3 @@
-
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
@@ -8,20 +7,20 @@ table {
   cursor: pointer;
 }
 
-input[type="text"]::placeholder{
+input[type="text"]::placeholder {
   color: rgb(134, 134, 134);
   opacity: 1;
   transition: 0.5s;
 }
-input[type="text"]:focus::placeholder{
+input[type="text"]:focus::placeholder {
   color: rgb(107, 107, 107);
   opacity: 1;
 }
-input[type="text"]:hover::placeholder{
+input[type="text"]:hover::placeholder {
   color: rgb(107, 107, 107);
   opacity: 1;
 }
-thead:hover{
+thead:hover {
   background-color: rgb(245, 245, 245);
   transition: 0.5s;
 }
@@ -64,7 +63,6 @@ th {
 .listImage {
   width: 80px;
   margin: 10px;
-
 }
 .tableUpdated {
   width: 80px;

@@ -6,6 +6,8 @@ import SpotInfo from "./components/spotInfo";
 import "./App.css";
 import axios from "axios";
 import Logo from "./components/logo";
+import OpenData from "./components/openData";
+import Users from "./components/Users";
 import CityPage from "./components/cityPage";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -59,6 +61,13 @@ class Main extends Component {
         description: "Dataa Android sovelluksen julkaisuhetkestä lähtien.",
         image: "../images/puhelin.png",
         path: "sovellukset",
+        updated: -1
+      },
+      {
+        title: "Avoin data",
+        description: "Tallenna spottimetän paikat .csv- tai .json-tiedostossa.",
+        image: "../images/avoindata.png",
+        path: "avoindata",
         updated: -1
       }
     ];
@@ -136,6 +145,14 @@ class Main extends Component {
               <CityPage data={this.parseCityData()}></CityPage>
             </Route>
 
+            <Route exact path="/avoindata">
+              <OpenData data={this.state.allData}></OpenData>
+            </Route>
+
+            <Route exact path="/lisaajat">
+              <Users />
+            </Route>
+
             <Route exact path="*">
               <HomePage listItems={this.state.listItems} />
             </Route>
@@ -175,6 +192,7 @@ class Main extends Component {
         commentsAmount={parsedData.commentsAmount}
         avgLat={parsedData.avgLat}
         avgLon={parsedData.avgLon}
+        data={this.state.allData.data}
       ></SpotInfo>
     );
   }
