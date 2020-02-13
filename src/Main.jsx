@@ -150,7 +150,7 @@ class Main extends Component {
             </Route>
 
             <Route exact path="/lisaajat">
-              <Users />
+              {this.getUsersComponent()}
             </Route>
 
             <Route exact path="*">
@@ -176,11 +176,85 @@ class Main extends Component {
     this.setState({ allData });
   }
 
+  getUsersComponent(){
+    if (!this.state.allData) {
+      return;
+    }
+    let topList = {};
+    let idList = [];
+    for (let spot in this.state.allData.data) {
+      if (this.state.allData.data[spot]["ID"] !== null && this.state.allData.data[spot]["ID"] !== undefined ){
+        // Ei oo vanhan spottimettän spotti
+        idList.push(this.state.allData.data[spot]["ID"]);
+        }
+
+      else {
+        // Spot from old skatemap - no creator's ID
+        idList.push(" ");
+      }
+    }// Looped list of id's
+    console.log(idList);
+    
+    
+
+    for(let i = 0 ; i < idList.length ; i++){
+      let id = idList[i];
+
+      if(topList[id] !== null && topList[idList[i]] !== undefined){
+        let amount = topList[id];
+        amount +=1;
+        topList[id] = amount;
+    }
+    else {
+      topList[id] = 1;
+    }
+    
+    }
+    
+
+    let orderedTopList = this.sortProperties(topList);
+    for (let i = 0; i < orderedTopList.length; i++) {
+      const topListElement = orderedTopList[i];
+      topListElement[0] = this.state.allData.nimimerkit[topListElement[0]] ? this.state.allData.nimimerkit[topListElement[0]] : "-"
+      
+    }
+    
+    
+    return (
+      <Users 
+      topList={orderedTopList}
+      totalUsers={this.state.allData.users.length}
+      
+      />
+
+
+    );
+    
+
+  }
+
+  sortProperties(obj)
+{
+
+	let sortable=[];
+	for(let key in obj){
+		if(obj.hasOwnProperty(key)){
+			sortable.push([key, obj[key]]);
+    }
+		sortable.sort(function(a, b)
+		{
+			return b[1]-a[1];
+    });
+  }
+	return sortable; // array in format [ [ key1, val1 ], [ key2, val2 ], ... ]
+}
+
   getSpotRoute() {
     if (!this.state.allData) {
       return;
     }
     let parsedData = this.parseSpotData();
+    console.log(parsedData.wordCounter);
 
     return (
       <SpotInfo
@@ -193,9 +267,14 @@ class Main extends Component {
         avgLat={parsedData.avgLat}
         avgLon={parsedData.avgLon}
         data={this.state.allData.data}
+        wordCounter={parsedData.wordCounter}
       ></SpotInfo>
     );
   }
+
+
+
+
   parseSpotData() {
     // Loop the data
     //    Loop the stored category data
@@ -209,6 +288,7 @@ class Main extends Component {
     let commentsAmount = 0;
     let avgLat = 0;
     let avgLon = 0;
+    let wordCounter = [];
 
     let avgCounter = 1;
     for (let spot in this.state.allData.data) {
@@ -237,6 +317,38 @@ class Main extends Component {
         commentsAmount += comments.split("\n\n").length;
       }
 
+      // Count the words
+      let wordInTitle = spot.split(" ");
+      for (let index = 0; index < wordInTitle.length; index++) {
+        const word = wordInTitle[index];
+        let wordAlready = false;
+        for (
+          let counterIndex = 0;
+          counterIndex < wordCounter.length;
+          counterIndex++
+        ) {
+          const element = wordCounter[counterIndex];
+
+          if (element.toLowerCase === "skeittiparkki") {
+            console.log("PARKKI");
+          }
+          if (element[0].toLowerCase() === word.toLowerCase()) {
+            if (word.length < 2) {
+              continue;
+            }
+            element[1]++;
+            wordAlready = true;
+            continue;
+          }
+        }
+        if (!wordAlready) {
+          wordCounter.push([
+            word.substr(0, 1).toUpperCase() + word.substr(1).toLowerCase(),
+            1
+          ]);
+        }
+      }
+
       for (let i = 0; i < categoryData.length; i++) {
         const element = categoryData[i];
         if (element["category"] != null && element["category"] === category) {
@@ -257,6 +369,8 @@ class Main extends Component {
 
     // Parsing done. Sort the data.
     categoryData.sort((a, b) => (a.amount > b.amount ? 1 : -1));
+    wordCounter.sort((a, b) => (a[1] < b[1] ? 1 : -1));
+
     return {
       data: categoryData,
       imagesAmount: imagesAmount,
@@ -264,7 +378,8 @@ class Main extends Component {
       noImages: noImages,
       commentsAmount: commentsAmount,
       avgLat: avgLat,
-      avgLon: avgLon
+      avgLon: avgLon,
+      wordCounter: wordCounter.slice(0, 100)
     };
   } //parseCategoryData()
 

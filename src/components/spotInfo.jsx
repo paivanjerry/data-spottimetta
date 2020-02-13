@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "../css/slider.css";
 import "../App.css";
+import DataTable from "./dataTable";
 import CategoryChart from "./categoryChart";
 
 class SpotInfo extends Component {
@@ -20,74 +21,19 @@ class SpotInfo extends Component {
       <div>
         <h2 className="m20b">Spottien tilastoja</h2>
 
-        <p>
-          {this.props.spotAmount
-            ? "Spottien määrä: " + this.props.spotAmount
-            : "Ladataan spottien määrää"}
-        </p>
-        <p>
-          {this.props.imagesAmount
-            ? "Kuvien spoteissa yhteensä: " + this.props.imagesAmount
-            : "Ladataan kuvien määrää"}
-        </p>
-        <p>
-          {this.props.noImages
-            ? "Kuvattomia spotteja: " +
-              this.props.noImages +
-              " --> " +
-              (
-                Math.round(
-                  (100 * 100 * this.props.noImages) / this.props.spotAmount
-                ) / 100
-              ).toFixed(2) +
-              " %"
-            : "Ladataan kuvattomien spottien määrää"}
-        </p>
-        <p>
-        {this.props.commentsAmount
-            ? "Kommentoituja spotteja: " +
-              this.props.commentedSpots +
-              " --> " +
-              (
-                Math.round(
-                  (100 * 100 * this.props.commentedSpots) /
-                    this.props.spotAmount
-                ) / 100
-              ).toFixed(2) +
-              " %"
-            : "Ladataan kommenttien määrää"}
-        </p>
-        <p>
-          {this.props.commentsAmount
-            ? "Kommenttien määrä: " + this.props.commentsAmount
-            : "Ladataan kommenttien määrää"}
-        </p>
+        <DataTable
+          data={this.formatSpotStatistics()}
+          leftTitle="Tilasto"
+          rightTitle="Määrä"
+        ></DataTable>
 
-        <p>
-          {this.props.avgLat && this.props.avgLon
-            ? "Spottien keskiarvosijainti on: "
-            : "Ladataan spotin keskiarvosijaintia"}
-          <a
-            href={
-              "http://www.google.com/maps/place/" +
-              this.props.avgLat +
-              "," +
-              this.props.avgLon
-            }
-          >
-            {this.props.avgLat && this.props.avgLon
-              ? this.props.avgLat + ", " + this.props.avgLon
-              : ""}
-          </a>
-        </p>
         <div className="sliderContainer">
           <h5>Hae erakoituneita spotteja</h5>
           <p>
             Etsi spotteja, joilla ei ole toista spottia valitulla etäisyytellä.
             <br />
             HOX! Pienillä etäisyyksillä vaatii paljon laskentatehoa ja tiedon
-            päivitys ottaa hetken aikaa. Laske-nappi palautuu vaaleammaksi, kun
-            laskenta on suoritettu
+            päivitys voi ottaa hetken aikaa.
           </p>
           <input
             id="spotRange"
@@ -133,9 +79,69 @@ class SpotInfo extends Component {
           data={this.props.categoryData}
           dataKey="category"
         ></CategoryChart>
+
+        <h2 className="m50t">Spotin otsikoissa käytettyjen sanojen määrä</h2>
+        <p>(käytetyimmät 100 sanaa)</p>
+        <DataTable
+          data={this.props.wordCounter}
+          leftTitle="Sana"
+          rightTitle="Määrä"
+        ></DataTable>
       </div>
     );
   }
+  formatSpotStatistics() {
+    console.log("FORMAATTIA");
+
+    let finalList = [];
+    finalList.push(["Spottien määrä", this.props.spotAmount]);
+    finalList.push(["Kuvia spoteissa yhteensä", this.props.imagesAmount]);
+
+    let imagelessPersentage = (
+      Math.round((100 * 100 * this.props.noImages) / this.props.spotAmount) /
+      100
+    ).toFixed(2);
+    finalList.push([
+      "Kuvattomia spotteja",
+      this.props.noImages + " (" + imagelessPersentage + " %)"
+    ]);
+
+    let commentlessPersentage = (
+      Math.round(
+        (100 * 100 * this.props.commentedSpots) / this.props.spotAmount
+      ) / 100
+    ).toFixed(2);
+    finalList.push([
+      "Kommentoituja spotteja",
+      this.props.commentedSpots + " (" + commentlessPersentage + " %)"
+    ]);
+
+    finalList.push(["Kommenttien määrä", this.props.commentsAmount]);
+
+    let prettierAvgLat = (
+      Math.round(10000 * this.props.avgLat) / 10000
+    ).toFixed(4);
+    let prettierAvgLon = (
+      Math.round(10000 * this.props.avgLon) / 10000
+    ).toFixed(4);
+    let coordListElement = (
+      <a
+        href={
+          "http://www.google.com/maps/place/" +
+          this.props.avgLat +
+          "," +
+          this.props.avgLon
+        }
+      >
+        {prettierAvgLat + ", " + prettierAvgLon}
+      </a>
+    );
+
+    finalList.push(["Spottien keskiarvosijainti", coordListElement]);
+
+    return finalList;
+  }
+
   getDistancedPersentageText() {
     if (isNaN(this.state.distancedSpots)) {
       return "";
