@@ -22,7 +22,7 @@ class list extends Component {
         <table className="listTable">
           <thead>
             <tr>
-              <th className="iconHeader">Kuvake</th>
+              <th className="iconHeader listImage">Kuvake</th>
               <th className="tableCenter">Nimi/Kuvaus</th>
               <th className="tableUpdated">Päivitetty</th>
             </tr>

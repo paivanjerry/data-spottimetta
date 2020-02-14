@@ -17,10 +17,24 @@ class Main extends Component {
 
     const listItems = [
       {
+        title: "Puhelimille asennettujen sovellusten määrä",
+        description: "Dataa Android sovelluksen julkaisuhetkestä lähtien.",
+        image: "../images/puhelin.png",
+        path: "sovellukset",
+        updated: -1
+      },
+      {
         title: "Rekisteröitymiset",
         description: "Tarkastele rekisteröitymisten määrää reaaliaikaisesti",
         image: "../images/register.png",
         path: "rekisteroitymisia",
+        updated: -1
+      },
+      {
+        title: "Viimeiset kirjautumiset",
+        description: "Tarkastele sovellukseen kirjautumisia",
+        image: "../images/avain.png",
+        path: "kirjautumiset",
         updated: -1
       },
       {
@@ -31,22 +45,7 @@ class Main extends Component {
         path: "lisaajat",
         updated: -1
       },
-      {
-        title: "Viimeiset kirjautumiset",
-        description: "Tarkastele sovellukseen kirjautumisia",
-        image: "../images/avain.png",
-        path: "kirjautumiset",
-        updated: -1
-      },
-
-      {
-        title: "Kaupunkien spottimäärät",
-        description:
-          "Noin 50 suurimman kaupungin/kunnan tilastot. Taulukoita spottimäärästä, sekä asukaslukuun suhteutettua tilastoa.",
-        image: "../images/kaupunki.png",
-        path: "kaupungit",
-        updated: -1
-      },
+      
       {
         title: "Spottien tilastot",
         description:
@@ -56,12 +55,15 @@ class Main extends Component {
         updated: -1
       },
       {
-        title: "Puhelimille asennettujen sovellusten määrä",
-        description: "Dataa Android sovelluksen julkaisuhetkestä lähtien.",
-        image: "../images/puhelin.png",
-        path: "sovellukset",
+        title: "Kaupunkien spottimäärät",
+        description:
+          "Noin 50 suurimman kaupungin/kunnan tilastot. Taulukoita spottimäärästä, sekä asukaslukuun suhteutettua tilastoa.",
+        image: "../images/kaupunki.png",
+        path: "kaupungit",
         updated: -1
       },
+     
+      
       {
         title: "Avoin data",
         description: "Tallenna spottimetän paikat .csv- tai .json-tiedostossa.",
@@ -110,6 +112,7 @@ class Main extends Component {
             <Route exact path="/sovellukset">
               <RegisterSignIn
                 data={this.state.androidInstallations}
+                dot={false}
                 situation="Aktiivisia asennuksia Android-laitteilla"
                 description="Laitteille asennetut viimeisen kuukauden sisällä avatut Android-sovellukset. Data on kerätty koko Android-sovelluksen elinkaaren ajalta ja sitä päivitetään sivuille manuaalisesti."
                 xAxisName="Asennuksia"
@@ -119,6 +122,7 @@ class Main extends Component {
             <Route exact path="/rekisteroitymisia">
               <RegisterSignIn
                 data={this.parseDateData("creationTime")}
+                dot={false}
                 situation="Rekisteröitymisiä"
                 description="Rekisteröityneitä käyttäjiä (ensimmäinen kirjautuminen). Laskelmiin sisältyy kaikki alustat."
               />
@@ -132,6 +136,7 @@ class Main extends Component {
 
             <Route exact path="/kirjautumiset">
               <RegisterSignIn
+                dot={false}
                 data={this.parseDateData("lastSignIn")}
                 situation="Viimeisin kirjautuminen"
                 description="Käyttäjien viimeisimmän kirjautumisen ajanhetki. Kaikkien alustojen yhteenlaskettu tilasto."
@@ -261,6 +266,15 @@ class Main extends Component {
     //        if category found in category data -> append category data counter
     //    Category not found in category data -> Initialize the category with counter of 0
 
+    const MARKERCOLORS = {
+      "-vesi-": "#188fd8",
+      "-vaneri-": "#e0870f",
+      "-spotti-": "#10d982",
+      "-parkki-": "#ebf000",
+      "-diy-": "#de09d4",
+      "-talvi-": "#FFFFFF"
+    };
+
     let categoryData = [];
     let imagesAmount = 0;
     let commentedSpots = 0;
@@ -338,7 +352,8 @@ class Main extends Component {
         // Not found. Initialize the object
         let object = {
           category: category,
-          amount: 0
+          amount: 0,
+          color: MARKERCOLORS[category]
         };
         categoryData.push(object);
       }

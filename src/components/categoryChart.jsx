@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  Cell,
   ResponsiveContainer
 } from "recharts";
 
@@ -31,12 +32,26 @@ class CategoryChart extends Component {
 
           <Bar
             name={this.props.xAxisName ?? "Määrä"}
-            dataKey={this.props.yDataKey ??"amount"}
+            dataKey={this.props.yDataKey ?? "amount"}
             fill="#00a732"
-          />
+          >
+            { this.props.data !== undefined ? this.props.data.map((entry, index) =>
+              this.coloredCell(entry, index)
+            ):""}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     );
+  }
+  print(a, b) {
+    console.log(JSON.stringify(a.color) + " - " + b);
+  }
+  coloredCell(entry, index) {
+    if (entry.color) {
+      return <Cell key={`cell-${index}`} fill={entry.color} stroke="grey" />;
+    } else {
+      return;
+    }
   }
 }
 

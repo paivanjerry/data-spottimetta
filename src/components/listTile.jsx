@@ -9,8 +9,8 @@ class ListTile extends Component {
         className={this.props.className + " tableRow"}
         onClick={() => this.changePath(this.props.object.path)}
       >
-        <td>
-          <div className="vertical">
+        <td className="listImage">
+          <div className="vertical listImage">
             <img
               className="listImage"
               src={this.props.object.image}

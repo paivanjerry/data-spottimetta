@@ -10,7 +10,7 @@ table {
   width: 90%;
   max-width: 900px;
 }
-@media (orientation: portrait) {
+@media only screen and (max-width: 500px) {
   .listTable {
     width: 98%;
   }
@@ -21,10 +21,18 @@ table {
     font-size: 10pt !important;
   }
   thead {
-    font-size: 10pt;
+    font-size: 10pt !important;
   }
   .tableUpdated {
-    font-size: 10pt;
+    font-size: 10pt !important;
+  }
+  .listImage {
+    width: 10vw !important;
+    max-width: 90px;
+  }
+  .iconHeader {
+    width: 10vw !important;
+    max-width: 90px;
   }
 }
 
@@ -79,18 +87,16 @@ th {
 }
 
 .listImage {
-  width: 10vw;
-  max-width: 80px;
+  width: 80px;
 }
 .iconHeader {
-  width: 10vw;
   max-width: 80px;
   overflow-wrap: break-word;
   word-break: break-all;
 }
 .tableUpdated {
-  width: 10vw;
-  max-width: 80px;
+  width: 80px;
+  max-width: 80px ;
 }
 
 .listTitle {

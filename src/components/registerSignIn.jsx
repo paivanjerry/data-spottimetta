@@ -9,6 +9,7 @@ class RegisterSignIn extends Component {
         <h2 className="bodyText">{this.props.situation}</h2>
         <p className="graphDescription bodyText">{this.props.description}</p>
         <PlotChart
+          dot={this.props.dot}
           data={this.props.data}
           xAxisName={this.props.situation}
         ></PlotChart>
