@@ -45,7 +45,7 @@ class Main extends Component {
         path: "lisaajat",
         updated: -1
       },
-      
+
       {
         title: "Spottien tilastot",
         description:
@@ -62,8 +62,7 @@ class Main extends Component {
         path: "kaupungit",
         updated: -1
       },
-     
-      
+
       {
         title: "Avoin data",
         description: "Tallenna spottimetän paikat .csv- tai .json-tiedostossa.",
@@ -139,7 +138,7 @@ class Main extends Component {
                 dot={false}
                 data={this.parseDateData("lastSignIn")}
                 situation="Viimeisin kirjautuminen"
-                description="Käyttäjien viimeisimmän kirjautumisen ajanhetki. Kaikkien alustojen yhteenlaskettu tilasto."
+                description="Käyttäjien viimeisimmän kirjautumisen ajanhetki. Kaikkien alustojen yhteenlaskettu tilasto. Toimintaperiaate: käyttäjä on kirjautunut viikko sitten ja kirjautuu nyt uudestaan --> viikon takainen kuvaajan piste pienentyy yhdellä arvolla ja tämänpäiväinen piste nousee yhdellä arvolla."
               ></RegisterSignIn>
             </Route>
 
@@ -387,6 +386,7 @@ class Main extends Component {
     let parsedData = [
       /* date: "2.10.2019", amount: 5 */
     ];
+    let earliestDate = new Date();
     for (let i = 0; i < this.state.allData.users.length; i++) {
       let found = false;
       const creationStr = this.state.allData.users[i][situation];
@@ -398,6 +398,9 @@ class Main extends Component {
         (dateObj.getMonth() + 1) +
         "." +
         dateObj.getFullYear();
+      if (dateObj < earliestDate) {
+        earliestDate = dateObj;
+      }
 
       for (let i = 0; i < parsedData.length; i++) {
         const element = parsedData[i];
@@ -412,11 +415,35 @@ class Main extends Component {
         // Not found. Initialize the object
         let object = {
           date: date,
+          amount: 1
+        };
+        parsedData.push(object);
+      }
+    }
+
+    // Now the datastructure contains only the dates which has user actions 
+    // Loop dates from the beginning and add empty ones
+    let now = new Date();
+    for (let d = earliestDate; d <= now; d.setDate(d.getDate() + 1)) {
+      let dateAlready = false;
+      const dateStr =
+        d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
+      for (let i = 0; i < parsedData.length; i++) {
+        const element = parsedData[i];
+        if (element.date === dateStr) {
+          dateAlready = true;
+          break;
+        }
+      }
+      if (!dateAlready) {
+        let object = {
+          date: dateStr,
           amount: 0
         };
         parsedData.push(object);
       }
     }
+    // Sort it for the graph
     parsedData.sort(dateCompare);
 
     return parsedData;

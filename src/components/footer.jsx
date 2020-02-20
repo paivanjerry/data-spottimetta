@@ -6,7 +6,7 @@ class Footer extends Component {
       <div className="footer">
         <div className="vertical">
           <a href="https://spottimetta.fi/webapp">Spottimettä web</a>
-          <a href="https://https://play.google.com/store/apps/details?id=com.jerry.spottimett.fi/webapp">Spottimettä Android</a>
+          <a href="https://play.google.com/store/apps/details?id=com.jerry.spottimett">Spottimettä Android</a>
           <a href="https://www.instagram.com/spottimetta/">Instagram</a>
 
         </div>
