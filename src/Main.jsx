@@ -9,6 +9,7 @@ import Logo from "./components/logo";
 import OpenData from "./components/openData";
 import Users from "./components/Users";
 import CityPage from "./components/cityPage";
+import AppPage from "./components/appPage";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 class Main extends Component {
@@ -17,8 +18,8 @@ class Main extends Component {
 
     const listItems = [
       {
-        title: "Puhelimille asennettujen sovellusten määrä",
-        description: "Dataa Android sovelluksen julkaisuhetkestä lähtien.",
+        title: "Puhelimille asennettujen sovellusten tilastoja",
+        description: "Dataa Android sovelluksen julkaisuhetkestä lähtien. Versioiden julkaisuajat, aktiiviset asennukset & uudet lataukset",
         image: "../images/puhelin.png",
         path: "sovellukset",
         updated: -1
@@ -109,11 +110,11 @@ class Main extends Component {
           <Logo></Logo>
           <Switch>
             <Route exact path="/sovellukset">
-              <RegisterSignIn
+              <AppPage
                 data={this.state.androidInstallations}
+                data2={this.state.androidNewInstallations}
                 dot={false}
                 situation="Aktiivisia asennuksia Android-laitteilla"
-                description="Laitteille asennetut viimeisen kuukauden sisällä avatut Android-sovellukset. Data on kerätty koko Android-sovelluksen elinkaaren ajalta ja sitä päivitetään sivuille manuaalisesti."
                 xAxisName="Asennuksia"
               />
             </Route>
@@ -421,7 +422,7 @@ class Main extends Component {
       }
     }
 
-    // Now the datastructure contains only the dates which has user actions 
+    // Now the datastructure contains only the dates which has user actions
     // Loop dates from the beginning and add empty ones
     let now = new Date();
     for (let d = earliestDate; d <= now; d.setDate(d.getDate() + 1)) {
@@ -458,20 +459,33 @@ class Main extends Component {
         let androidInstallations = [];
         for (let i = 4; i < rows.length - 2; i++) {
           const element = rows[i];
-          const timeParts = element.split(",")[1].split("-");
+          const rowInList = element.split(",");
+          const timeParts = rowInList[1].split("-");
           const listTime =
             timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
-          let amount = parseInt(element.split(",")[3].replace("-", "0"));
+          let amount = parseInt(rowInList[3].replace("-", "0"));
+          let versionInfo;
+          if (rowInList.length > 4) {
+            let description = rowInList[4];
+            if (description.includes("Julkaisun käyttöönotto - ")) {
+              const startIndex = description.search(" - ") + 3;
+
+              description = description.substr(startIndex);
+              const endIndex = description.search(" ");
+              versionInfo = description.substr(0, endIndex);
+            }
+          }
 
           if (amount !== 0 || i < rows.length - 10) {
             androidInstallations.push({
               date: listTime,
-              amount: parseInt(element.split(",")[3].replace("-", "0"))
+              amount: parseInt(rowInList[3].replace("-", "0")),
+              info: versionInfo
             });
           }
 
           // Last row -> take the date and show in the list
-          if (rows[i + 1] === undefined || rows[i + 2].split(",")[3] === "-") {
+          if (rows[i + 3] === undefined) {
             const listItems = [...this.state.listItems];
             for (let index = 0; index < listItems.length; index++) {
               const element = listItems[index];
@@ -483,7 +497,44 @@ class Main extends Component {
             }
           }
         }
+        this.getNewAndroidInstallsFromFile();
       });
+
+      
+  }
+
+  getNewAndroidInstallsFromFile(){
+    fetch(`${process.env.PUBLIC_URL}/androidNewDownloads.csv`)
+    .then(r => r.text())
+    .then(allText => {
+      let rows = allText.split("\n");
+
+      let androidInstallations = [];
+      for (let i = 4; i < rows.length - 2; i++) {
+        const element = rows[i];
+        const rowInList = element.split(",");
+        const timeParts = rowInList[1].split("-");
+        const listTime =
+          timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
+        let amount = parseInt(rowInList[3].replace("-", "0"));
+
+        if (amount !== 0 || i < rows.length - 10) {
+          androidInstallations.push({
+            date: listTime,
+            amount: parseInt(rowInList[3].replace("-", "0"))
+          });
+        }
+
+        // Last row
+        if (rows[i + 3] === undefined) {
+          console.log(androidInstallations);
+          
+          this.setState({ androidNewInstallations: androidInstallations });
+          continue;
+            
+        }
+      }
+    });
   }
 
   getGeoDataFromFile() {
