@@ -527,8 +527,6 @@ class Main extends Component {
 
         // Last row
         if (rows[i + 3] === undefined) {
-          console.log(androidInstallations);
-          
           this.setState({ androidNewInstallations: androidInstallations });
           continue;
             

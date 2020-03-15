@@ -11,7 +11,7 @@ class AppPage extends Component {
         <PlotChart
           dot={this.props.dot}
           data={this.props.data}
-          xAxisName={this.props.situation}
+          xAxisName="Asennuksia"
         ></PlotChart>
 
         <h2 className="bodyText m50t">Lataukset päivittäin</h2>
