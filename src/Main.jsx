@@ -19,7 +19,8 @@ class Main extends Component {
     const listItems = [
       {
         title: "Puhelimille asennettujen sovellusten tilastoja",
-        description: "Dataa Android sovelluksen julkaisuhetkestä lähtien. Versioiden julkaisuajat, aktiiviset asennukset & uudet lataukset",
+        description:
+          "Dataa Android sovelluksen julkaisuhetkestä lähtien. Versioiden julkaisuajat, aktiiviset asennukset & uudet lataukset",
         image: "../images/puhelin.png",
         path: "sovellukset",
         updated: -1
@@ -182,21 +183,58 @@ class Main extends Component {
     if (!this.state.allData) {
       return;
     }
+    let idCoord = {};
     let topList = {};
     let idList = [];
+    let overHundred = 0;
     for (let spot in this.state.allData.data) {
-      if (
-        this.state.allData.data[spot]["ID"] !== null &&
-        this.state.allData.data[spot]["ID"] !== undefined
-      ) {
-        // Ei oo vanhan spottimettän spotti
-        idList.push(this.state.allData.data[spot]["ID"]);
+      const id = this.state.allData.data[spot]["ID"];
+      const lat = parseFloat(this.state.allData.data[spot]["LAT"]);
+      const lon = parseFloat(this.state.allData.data[spot]["LON"]);
+      if (id !== null && id !== undefined) {
+        // Not from old skatemap
+        idList.push(id);
+        if (idCoord[id] === undefined) {
+          
+          idCoord[id] = [[lat, lon]];
+        }
+        else{
+          let coordList = idCoord[id];
+          coordList.push([lat, lon]);
+          idCoord[id] = coordList;
+        }
       } else {
         // Spot from old skatemap - no creator's ID
         idList.push(" ");
       }
     } // Looped list of id's
 
+    let breakOut = false;
+    // Count over 100km adders
+    for (const id in idCoord) {
+      breakOut = false;
+      const userSpots = idCoord[id];
+      if(userSpots.length < 2){
+        continue;
+      }
+      for(let i = 0; i < userSpots.length; i++){
+        for(let i2 = i+1; i2 < userSpots.length; i2++){
+          const distance = countDistance(userSpots[i][0], userSpots[i2][0], userSpots[i][1], userSpots[i2][1],);
+          if(distance > 100){
+            overHundred += 1;
+            breakOut = true;
+            break;
+          }
+        } // Most inner for loop ends
+        if(breakOut){break;}
+      }
+    }
+    console.log(overHundred);
+
+    
+
+
+    // Create toplist from idlist
     for (let i = 0; i < idList.length; i++) {
       let id = idList[i];
 
@@ -216,11 +254,12 @@ class Main extends Component {
         ? this.state.allData.nimimerkit[topListElement[0]]
         : "-";
     }
-
+    
     return (
       <Users
         topList={orderedTopList}
         totalUsers={this.state.allData.users.length}
+        overHundred={overHundred}
       />
     );
   }
@@ -499,40 +538,37 @@ class Main extends Component {
         }
         this.getNewAndroidInstallsFromFile();
       });
-
-      
   }
 
-  getNewAndroidInstallsFromFile(){
+  getNewAndroidInstallsFromFile() {
     fetch(`${process.env.PUBLIC_URL}/androidNewDownloads.csv`)
-    .then(r => r.text())
-    .then(allText => {
-      let rows = allText.split("\n");
+      .then(r => r.text())
+      .then(allText => {
+        let rows = allText.split("\n");
 
-      let androidInstallations = [];
-      for (let i = 4; i < rows.length - 2; i++) {
-        const element = rows[i];
-        const rowInList = element.split(",");
-        const timeParts = rowInList[1].split("-");
-        const listTime =
-          timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
-        let amount = parseInt(rowInList[3].replace("-", "0"));
+        let androidInstallations = [];
+        for (let i = 4; i < rows.length - 2; i++) {
+          const element = rows[i];
+          const rowInList = element.split(",");
+          const timeParts = rowInList[1].split("-");
+          const listTime =
+            timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
+          let amount = parseInt(rowInList[3].replace("-", "0"));
 
-        if (amount !== 0 || i < rows.length - 10) {
-          androidInstallations.push({
-            date: listTime,
-            amount: parseInt(rowInList[3].replace("-", "0"))
-          });
+          if (amount !== 0 || i < rows.length - 10) {
+            androidInstallations.push({
+              date: listTime,
+              amount: parseInt(rowInList[3].replace("-", "0"))
+            });
+          }
+
+          // Last row
+          if (rows[i + 3] === undefined) {
+            this.setState({ androidNewInstallations: androidInstallations });
+            continue;
+          }
         }
-
-        // Last row
-        if (rows[i + 3] === undefined) {
-          this.setState({ androidNewInstallations: androidInstallations });
-          continue;
-            
-        }
-      }
-    });
+      });
   }
 
   getGeoDataFromFile() {
@@ -598,6 +634,20 @@ function dateCompare(a, b) {
       return parseInt(aSplit[i]) > parseInt(bSplit[i]) ? 1 : -1;
     }
   }
+}
+
+function countDistance(lat1, lat2, lon1, lon2) {
+  let phi1 = (lat1 * Math.PI) / 180;
+  let phi2 = (lat2 * Math.PI) / 180;
+  let lam1 = (lon1 * Math.PI) / 180;
+  let lam2 = (lon2 * Math.PI) / 180;
+  return (
+    6371.01 *
+    Math.acos(
+      Math.sin(phi1) * Math.sin(phi2) +
+        Math.cos(phi1) * Math.cos(phi2) * Math.cos(lam2 - lam1)
+    )
+  );
 }
 
 export default Main;

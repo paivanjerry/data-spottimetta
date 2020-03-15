@@ -81,6 +81,10 @@ class Users extends Component {
       "Todennäköisyys, että spotin lisääjä lisää usean spotin",
       multispotPropability + "%"
     ]);
+    finalData.push([
+      "Käyttäjiä, jotka ovat lisänneet spotteja yli 100km alueelle",
+      this.props.overHundred
+    ]);
 
     return finalData;
   }

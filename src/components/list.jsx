@@ -50,7 +50,7 @@ class list extends Component {
     const allListTiles = [...this.props.listItems];
     for (let i = 0; i < allListTiles.length; i++) {
       const element = allListTiles[i];
-      if (element.title.toLowerCase().includes(typedText)) {
+      if (element.title.toLowerCase().includes(typedText) || element.description.toLowerCase().includes(typedText)) {
         listTiles.push(element);
       }
     }
