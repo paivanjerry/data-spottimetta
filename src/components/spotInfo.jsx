@@ -116,6 +116,15 @@ class SpotInfo extends Component {
       this.props.commentedSpots + " (" + commentlessPersentage + " %)"
     ]);
 
+    let multicommentPersentage = (
+      Math.round(
+        (100 * 100 * this.props.multicomments) / this.props.spotAmount
+      ) / 100
+    ).toFixed(2);
+    finalList.push([
+      "Usean kommentin spotteja",
+      this.props.multicomments + " (" + multicommentPersentage + " %)"
+    ]);
     finalList.push(["Kommenttien määrä", this.props.commentsAmount]);
 
     let prettierAvgLat = (

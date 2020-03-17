@@ -58,7 +58,14 @@ class Users extends Component {
     let addersPersentage = (
       Math.round(
         (100 * 100 * this.props.topList.length) /
-          (this.props.topList.length + this.props.totalUsers)
+          (this.props.totalUsers)
+      ) / 100
+    ).toFixed(2);
+
+    let overHundredPersentage = (
+      Math.round(
+        (100 * 100 * this.props.overHundred) /
+          (this.props.totalUsers)
       ) / 100
     ).toFixed(2);
 
@@ -83,7 +90,7 @@ class Users extends Component {
     ]);
     finalData.push([
       "Käyttäjiä, jotka ovat lisänneet spotteja yli 100km alueelle",
-      this.props.overHundred
+      this.props.overHundred + " (" + overHundredPersentage + " %)"
     ]);
 
     return finalData;

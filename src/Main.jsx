@@ -195,10 +195,8 @@ class Main extends Component {
         // Not from old skatemap
         idList.push(id);
         if (idCoord[id] === undefined) {
-          
           idCoord[id] = [[lat, lon]];
-        }
-        else{
+        } else {
           let coordList = idCoord[id];
           coordList.push([lat, lon]);
           idCoord[id] = coordList;
@@ -214,25 +212,28 @@ class Main extends Component {
     for (const id in idCoord) {
       breakOut = false;
       const userSpots = idCoord[id];
-      if(userSpots.length < 2){
+      if (userSpots.length < 2) {
         continue;
       }
-      for(let i = 0; i < userSpots.length; i++){
-        for(let i2 = i+1; i2 < userSpots.length; i2++){
-          const distance = countDistance(userSpots[i][0], userSpots[i2][0], userSpots[i][1], userSpots[i2][1],);
-          if(distance > 100){
+      for (let i = 0; i < userSpots.length; i++) {
+        for (let i2 = i + 1; i2 < userSpots.length; i2++) {
+          const distance = countDistance(
+            userSpots[i][0],
+            userSpots[i2][0],
+            userSpots[i][1],
+            userSpots[i2][1]
+          );
+          if (distance > 100) {
             overHundred += 1;
             breakOut = true;
             break;
           }
         } // Most inner for loop ends
-        if(breakOut){break;}
+        if (breakOut) {
+          break;
+        }
       }
     }
-    console.log(overHundred);
-
-    
-
 
     // Create toplist from idlist
     for (let i = 0; i < idList.length; i++) {
@@ -254,7 +255,7 @@ class Main extends Component {
         ? this.state.allData.nimimerkit[topListElement[0]]
         : "-";
     }
-    
+
     return (
       <Users
         topList={orderedTopList}
@@ -295,6 +296,7 @@ class Main extends Component {
         avgLon={parsedData.avgLon}
         data={this.state.allData.data}
         wordCounter={parsedData.wordCounter}
+        multicomments={parsedData.multicomments}
       ></SpotInfo>
     );
   }
@@ -317,6 +319,7 @@ class Main extends Component {
     let categoryData = [];
     let imagesAmount = 0;
     let commentedSpots = 0;
+    let multicomments = 0;
     let noImages = 0;
     let commentsAmount = 0;
     let avgLat = 0;
@@ -346,8 +349,12 @@ class Main extends Component {
       // Count the comments
       let comments = this.state.allData.data[spot]["KOMMENTIT"];
       if (comments !== null && comments !== undefined && comments !== "") {
+        let spotsCommentsAmount = comments.split("\n\n").length;
         commentedSpots++;
-        commentsAmount += comments.split("\n\n").length;
+        commentsAmount += spotsCommentsAmount;
+        if (spotsCommentsAmount > 1) {
+          multicomments++;
+        }
       }
 
       // Count the words
@@ -410,7 +417,8 @@ class Main extends Component {
       commentsAmount: commentsAmount,
       avgLat: avgLat,
       avgLon: avgLon,
-      wordCounter: wordCounter.slice(0, 100)
+      wordCounter: wordCounter.slice(0, 100),
+      multicomments: multicomments
     };
   } //parseCategoryData()
 
