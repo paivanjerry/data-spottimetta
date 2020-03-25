@@ -11,6 +11,7 @@ class Users extends Component {
           data={this.getTableData()}
           leftTitle="Tilasto"
           rightTitle="data"
+          sortable={false}
         />
 
         <h2 className="m50t">Kaikki spottien lisääjät taulukoituna</h2>

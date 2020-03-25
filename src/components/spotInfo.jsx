@@ -27,6 +27,7 @@ class SpotInfo extends Component {
           data={this.formatSpotStatistics()}
           leftTitle="Tilasto"
           rightTitle="Määrä"
+          sortable={false}
         ></DataTable>
 
         <div className="sliderContainer">

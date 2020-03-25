@@ -1,0 +1,8 @@
+https://data.spottimetta.fi/
+https://data.spottimetta.fi/sovellukset
+https://data.spottimetta.fi/rekisteroitymisia
+https://data.spottimetta.fi/kirjautumiset
+https://data.spottimetta.fi/lisaajat
+https://data.spottimetta.fi/spotit
+https://data.spottimetta.fi/kaupungit
+https://data.spottimetta.fi/avoindata
