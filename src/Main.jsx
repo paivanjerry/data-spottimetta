@@ -297,6 +297,7 @@ class Main extends Component {
         data={this.state.allData.data}
         wordCounter={parsedData.wordCounter}
         multicomments={parsedData.multicomments}
+        unchecked={parsedData.unchecked}
       ></SpotInfo>
     );
   }
@@ -325,11 +326,16 @@ class Main extends Component {
     let avgLat = 0;
     let avgLon = 0;
     let wordCounter = [];
+    let unchecked = 0;
 
     let avgCounter = 1;
     for (let spot in this.state.allData.data) {
       let category = this.state.allData.data[spot]["TYYPPI"];
       let found = false;
+
+      if(this.state.allData.data[spot]["TARKISTETTU"]){
+        unchecked++;
+      }
 
       // Count the images
       let images = this.state.allData.data[spot]["KUVAT"];
@@ -418,7 +424,8 @@ class Main extends Component {
       avgLat: avgLat,
       avgLon: avgLon,
       wordCounter: wordCounter.slice(0, 100),
-      multicomments: multicomments
+      multicomments: multicomments,
+      unchecked
     };
   } //parseCategoryData()
 

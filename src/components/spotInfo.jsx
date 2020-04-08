@@ -96,6 +96,12 @@ class SpotInfo extends Component {
   formatSpotStatistics() {
     let finalList = [];
     finalList.push(["Spottien määrä", this.props.spotAmount]);
+
+    let uncheckedPersentage = (
+      Math.round((100 * 100 * this.props.unchecked) / this.props.spotAmount) /
+      100
+    ).toFixed(2);
+    finalList.push(["Tarkastamattomia spotteja", this.props.unchecked + " (" + uncheckedPersentage + " %)"]);
     finalList.push(["Kuvia spoteissa yhteensä", this.props.imagesAmount]);
 
     let imagelessPersentage = (
