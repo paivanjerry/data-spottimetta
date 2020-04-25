@@ -11,6 +11,7 @@ import Users from "./components/Users";
 import CityPage from "./components/cityPage";
 import AppPage from "./components/appPage";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { compareDates} from './helperFunctions.js'
 
 class Main extends Component {
   constructor(props) {
@@ -23,21 +24,21 @@ class Main extends Component {
           "Dataa Android sovelluksen julkaisuhetkestä lähtien. Versioiden julkaisuajat, aktiiviset asennukset & uudet lataukset",
         image: "../images/puhelin.png",
         path: "sovellukset",
-        updated: -1
+        updated: -1,
       },
       {
         title: "Rekisteröitymiset",
         description: "Tarkastele rekisteröitymisten määrää reaaliaikaisesti",
         image: "../images/register.png",
         path: "rekisteroitymisia",
-        updated: -1
+        updated: -1,
       },
       {
         title: "Viimeiset kirjautumiset",
         description: "Tarkastele sovellukseen kirjautumisia",
         image: "../images/avain.png",
         path: "kirjautumiset",
-        updated: -1
+        updated: -1,
       },
       {
         title: "Spottien lisääjät",
@@ -45,7 +46,7 @@ class Main extends Component {
           "Käyttäjien toimintoihin liittyviä tilastoja. Esim spotteja lisänneet käyttäjät ja niiden jakauma.",
         image: "../images/lisaajat.png",
         path: "lisaajat",
-        updated: -1
+        updated: -1,
       },
 
       {
@@ -54,7 +55,7 @@ class Main extends Component {
           "Paljon tilastoja sovelluksen paikoista, kuten kategoriajako, yleisin sana nimessä, keskiarvo spotin otsikon pituudesta yms...",
         image: "../images/pinni.png",
         path: "spotit",
-        updated: -1
+        updated: -1,
       },
       {
         title: "Kaupunkien spottimäärät",
@@ -62,7 +63,7 @@ class Main extends Component {
           "Noin 50 suurimman kaupungin/kunnan tilastot. Taulukoita spottimäärästä, sekä asukaslukuun suhteutettua tilastoa.",
         image: "../images/kaupunki.png",
         path: "kaupungit",
-        updated: -1
+        updated: -1,
       },
 
       {
@@ -70,8 +71,8 @@ class Main extends Component {
         description: "Tallenna spottimetän paikat .csv- tai .json-tiedostossa.",
         image: "../images/avoindata.png",
         path: "avoindata",
-        updated: -1
-      }
+        updated: -1,
+      },
     ];
     this.state = { listItems };
   }
@@ -97,7 +98,7 @@ class Main extends Component {
     // if allData still got value, it means we can use it as valid cache for this hour
     if (allData) {
       this.setState({
-        allData
+        allData,
       });
     } else {
       this.getData();
@@ -114,6 +115,7 @@ class Main extends Component {
               <AppPage
                 data={this.state.androidInstallations}
                 data2={this.state.androidNewInstallations}
+                appUnits={this.state.appUnits}
                 dot={false}
                 situation="Aktiivisia asennuksia Android-laitteilla"
                 xAxisName="Asennuksia"
@@ -169,7 +171,7 @@ class Main extends Component {
   getData() {
     axios
       .get("https://us-central1-spottimett.cloudfunctions.net/getData")
-      .then(response => this.saveData(response));
+      .then((response) => this.saveData(response));
   }
   saveData(response) {
     let allData = JSON.parse(response.request.response);
@@ -271,7 +273,7 @@ class Main extends Component {
       if (obj.hasOwnProperty(key)) {
         sortable.push([key, obj[key]]);
       }
-      sortable.sort(function(a, b) {
+      sortable.sort(function (a, b) {
         return b[1] - a[1];
       });
     }
@@ -298,6 +300,9 @@ class Main extends Component {
         wordCounter={parsedData.wordCounter}
         multicomments={parsedData.multicomments}
         unchecked={parsedData.unchecked}
+        iosUnchecked={parsedData.iosUnchecked}
+        webUnchecked={parsedData.webUnchecked}
+        androidUnchecked={parsedData.androidUnchecked}
       ></SpotInfo>
     );
   }
@@ -314,7 +319,7 @@ class Main extends Component {
       "-spotti-": "#10d982",
       "-parkki-": "#ebf000",
       "-diy-": "#de09d4",
-      "-talvi-": "#FFFFFF"
+      "-talvi-": "#FFFFFF",
     };
 
     let categoryData = [];
@@ -327,14 +332,26 @@ class Main extends Component {
     let avgLon = 0;
     let wordCounter = [];
     let unchecked = 0;
+    let webUnchecked = 0;
+    let iosUnchecked = 0;
+    let androidUnchecked = 0;
 
     let avgCounter = 1;
     for (let spot in this.state.allData.data) {
       let category = this.state.allData.data[spot]["TYYPPI"];
       let found = false;
-
-      if(this.state.allData.data[spot]["TARKISTETTU"]){
+      let notChecked = this.state.allData.data[spot]["TARKISTETTU"];
+      if (notChecked) {
         unchecked++;
+        if (notChecked === "webbi") {
+          webUnchecked++;
+        }
+        if (notChecked === "android") {
+          androidUnchecked++;
+        }
+        if (notChecked === "ios") {
+          iosUnchecked++;
+        }
       }
 
       // Count the images
@@ -387,7 +404,7 @@ class Main extends Component {
         if (!wordAlready) {
           wordCounter.push([
             word.substr(0, 1).toUpperCase() + word.substr(1).toLowerCase(),
-            1
+            1,
           ]);
         }
       }
@@ -405,7 +422,7 @@ class Main extends Component {
         let object = {
           category: category,
           amount: 0,
-          color: MARKERCOLORS[category]
+          color: MARKERCOLORS[category],
         };
         categoryData.push(object);
       }
@@ -425,7 +442,10 @@ class Main extends Component {
       avgLon: avgLon,
       wordCounter: wordCounter.slice(0, 100),
       multicomments: multicomments,
-      unchecked
+      unchecked,
+      iosUnchecked,
+      webUnchecked,
+      androidUnchecked,
     };
   } //parseCategoryData()
 
@@ -470,7 +490,7 @@ class Main extends Component {
         // Not found. Initialize the object
         let object = {
           date: date,
-          amount: 1
+          amount: 1,
         };
         parsedData.push(object);
       }
@@ -493,7 +513,7 @@ class Main extends Component {
       if (!dateAlready) {
         let object = {
           date: dateStr,
-          amount: 0
+          amount: 0,
         };
         parsedData.push(object);
       }
@@ -506,8 +526,8 @@ class Main extends Component {
 
   getDataFromFile() {
     fetch(`${process.env.PUBLIC_URL}/androidActiveDownloads.csv`)
-      .then(r => r.text())
-      .then(allText => {
+      .then((r) => r.text())
+      .then((allText) => {
         let rows = allText.split("\n");
 
         let androidInstallations = [];
@@ -534,31 +554,36 @@ class Main extends Component {
             androidInstallations.push({
               date: listTime,
               amount: parseInt(rowInList[3].replace("-", "0")),
-              info: versionInfo
+              info: versionInfo,
             });
           }
 
           // Last row -> take the date and show in the list
           if (rows[i + 3] === undefined) {
-            const listItems = [...this.state.listItems];
-            for (let index = 0; index < listItems.length; index++) {
-              const element = listItems[index];
-              if (element.path === "sovellukset") {
-                listItems[index].updated = listTime;
-                this.setState({ listItems, androidInstallations });
-                continue;
-              }
-            }
+            this.setLatestAppsUpdated(listTime);
           }
         }
+        this.setState({ androidInstallations});
         this.getNewAndroidInstallsFromFile();
+        this.getAppUnitsFromFile();
       });
+  }
+  setLatestAppsUpdated(listTime){
+    const listItems = [...this.state.listItems];
+    for (let index = 0; index < listItems.length; index++) {
+      const element = listItems[index];
+      if (element.path === "sovellukset") {
+        listItems[index].updated = listTime;
+        this.setState({ listItems});
+        continue;
+      }
+    }
   }
 
   getNewAndroidInstallsFromFile() {
     fetch(`${process.env.PUBLIC_URL}/androidNewDownloads.csv`)
-      .then(r => r.text())
-      .then(allText => {
+      .then((r) => r.text())
+      .then((allText) => {
         let rows = allText.split("\n");
 
         let androidInstallations = [];
@@ -573,16 +598,76 @@ class Main extends Component {
           if (amount !== 0 || i < rows.length - 10) {
             androidInstallations.push({
               date: listTime,
-              amount: parseInt(rowInList[3].replace("-", "0"))
+              amount: parseInt(rowInList[3].replace("-", "0")),
             });
           }
 
           // Last row
           if (rows[i + 3] === undefined) {
             this.setState({ androidNewInstallations: androidInstallations });
+            const listItems = [...this.state.listItems];
+            for (let index = 0; index < listItems.length; index++) {
+              const element = listItems[index];
+              if (element.path === "sovellukset") {
+                if(compareDates(listTime, listItems[index].updated)){
+                  listItems[index].updated = listTime;
+                }
+                
+                this.setState({ listItems});
+                continue;
+              }
+            }
+
             continue;
           }
         }
+      });
+  }
+
+  getAppUnitsFromFile() {
+    fetch(`${process.env.PUBLIC_URL}/appunits.csv`)
+      .then((r) => r.text())
+      .then((allText) => {
+        let rows = allText.split("\n");
+
+        let appUnits = [];
+        for (let i = 5; i < rows.length; i++) {
+          const element = rows[i];
+
+          const rowInList = element.split(",");
+          const timeParts = rowInList[0].split("/");
+          let day = timeParts[1];
+          if (day.length === 1) {
+            day = "0" + day;
+          }
+          let month = timeParts[0];
+          if (month.length === 1) {
+            month = "0" + month;
+          }
+          let year = "20" + timeParts[2];
+
+          const listTime = day + "." + month + "." + year;
+          let amount = parseInt(rowInList[1]);
+          appUnits.push({
+            date: listTime,
+            amount: amount,
+          });
+          if(i === rows.length -1){
+            const listItems = [...this.state.listItems];
+            for (let index = 0; index < listItems.length; index++) {
+              const element = listItems[index];
+              if (element.path === "sovellukset") {
+                if(compareDates(listTime, listItems[index].updated)){
+                  listItems[index].updated = listTime;
+                }
+                
+                this.setState({ listItems});
+                continue;
+              }
+            }
+          }
+        }
+        this.setState({ appUnits: appUnits });
       });
   }
 
@@ -625,7 +710,7 @@ class Main extends Component {
             let object = {
               city: element.kaupunki,
               amount: 0,
-              population: element.asukasLuku
+              population: element.asukasLuku,
             };
             topList.push(object);
           }

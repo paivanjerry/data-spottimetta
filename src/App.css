@@ -38,3 +38,12 @@ h2 {
 .wrap {
   overflow-wrap: break-word;
 }
+.sidePadding50{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.sideMargin50{
+  margin-left: 50px;
+  margin-right: 50px;
+}

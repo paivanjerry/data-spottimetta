@@ -101,7 +101,7 @@ class SpotInfo extends Component {
       Math.round((100 * 100 * this.props.unchecked) / this.props.spotAmount) /
       100
     ).toFixed(2);
-    finalList.push(["Tarkastamattomia spotteja", this.props.unchecked + " (" + uncheckedPersentage + " %)"]);
+    finalList.push(["Tarkastamattomia spotteja", this.props.unchecked + " (" + uncheckedPersentage + " %), joista lisätty sovelluksessa web: " + this.props.webUnchecked + ", Android: "+ this.props.androidUnchecked + " & iOS: " + this.props.iosUnchecked]);
     finalList.push(["Kuvia spoteissa yhteensä", this.props.imagesAmount]);
 
     let imagelessPersentage = (

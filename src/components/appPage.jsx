@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PlotChart from "./plotChart";
+import DualChart from "./dualChart";
 
 class AppPage extends Component {
   render() {
@@ -7,7 +8,13 @@ class AppPage extends Component {
     return (
       <div>
         <h2 className="bodyText">{this.props.situation}</h2>
-        <p className="graphDescription bodyText">Laitteille asennetut viimeisen kuukauden sisällä avatut Android-sovellukset. Data on kerätty koko Android-sovelluksen elinkaaren ajalta ja sitä päivitetään sivuille manuaalisesti. Tässä kuvaajassa näkyy vihreinä palloina sovellusversioiden julkaisuhetket.</p>
+        <p className="graphDescription bodyText">
+          Laitteille asennetut viimeisen kuukauden sisällä avatut
+          Android-sovellukset. Data on kerätty koko Android-sovelluksen
+          elinkaaren ajalta ja sitä päivitetään sivuille manuaalisesti. Tässä
+          kuvaajassa näkyy vihreinä palloina Android sovellusversioiden
+          julkaisuhetket.
+        </p>
         <PlotChart
           dot={this.props.dot}
           data={this.props.data}
@@ -16,14 +23,16 @@ class AppPage extends Component {
 
         <h2 className="bodyText m50t">Lataukset päivittäin</h2>
         <p className="graphDescription bodyText">
-          Kaavioon lisätty vain käyttäjät, jotka eivät ole aiemmin ladanneet
-          sovellusta. Data on koko sovelluksen elinkaaren ajalta.
+          Kaavio sisältää myös käyttäjät, jotka ovat aikaisemmin ladanneet
+          sovelluksen. Dataa iOS ja Android sovelluksista.
         </p>
-        <PlotChart
+        <DualChart
           dot={this.props.dot}
-          data={this.props.data2}
-          xAxisName="Latauksia"
-        ></PlotChart>
+          data={[
+            { name: "Android", data: this.props.data2 },
+            { name: "iOS", data: this.props.appUnits },
+          ]}
+        ></DualChart>
       </div>
     );
   }

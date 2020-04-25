@@ -135,3 +135,66 @@ input[type="range"]:focus::-ms-fill-upper {
 .m5r {
   margin-right: 5px;
 }
+
+.dualRange{
+  position: absolute;
+  right: 25px;
+}
+
+#lowerSlider{
+  z-index: 100;
+}
+#upperSlider{
+  z-index: 10;
+}
+#lowerSlider::-webkit-slider-runnable-track {
+  width: 0%;
+  height: 0px;
+  cursor: pointer;
+  box-shadow: 0px transparent, 0px  transparent;
+  background: transparent;
+  border-radius: 0px;
+  border: 0px solid transparent;
+}
+
+#lowerSlider:focus::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+#lowerSlider::-moz-range-track {
+  width: 0%;
+  height: 0px;
+  cursor: pointer;
+  box-shadow:  transparent,  transparent;
+  background: transparent;
+  border-radius: 1.3px;
+  border: 0px solid transparent;
+}
+
+#lowerSlider::-ms-track {
+  width: 0%;
+  height: 0px;
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  border-width: 0px 0;
+  color: transparent;
+}
+#lowerSlider::-ms-fill-lower {
+  background: transparent;
+  border: transparent;
+  border-radius: 0px;
+  box-shadow:  0px transparent, 0px  transparent;
+}
+#lowerSlider:focus::-ms-fill-lower {
+  background: transparent;
+}
+#lowerSlider::-ms-fill-upper {
+  background: transparent;
+  border: 0px solid transparent;
+  border-radius: 0px;
+  box-shadow:  0px transparent, 0px  transparent;
+}
+#lowerSlider:focus::-ms-fill-upper {
+  background: transparent;
+}
