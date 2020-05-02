@@ -13,9 +13,33 @@ class RegisterSignIn extends Component {
           data={this.props.data}
           xAxisName={this.props.situation}
         ></PlotChart>
+
+        {this.getAnotherGraph()}
+        
       </div>
     );
+    
+    }
+    getAnotherGraph(){
+      if(this.props.signInHistory){
+        return (
+          <div>
+
+          
+          <h2 className=" m50t bodyText">Kirjautumiset päivittäin</h2>
+          <p className="graphDescription bodyText">Kuvaajassa näkyy kyseisen päivän aikana kirjautuneet käyttäjät. Vanhat ajankohdat ei laske käyttäjän kirjautuessa uudestaan.</p>
+        <PlotChart
+          dot={this.props.dot}
+          data={this.props.signInHistory}
+          xAxisName="Kirjautumisia"
+        ></PlotChart>
+        </div>
+        );
+      }
+    }
+
   }
-}
+
+
 
 export default RegisterSignIn;

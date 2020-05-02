@@ -115,6 +115,7 @@ class Main extends Component {
               <AppPage
                 data={this.state.androidInstallations}
                 data2={this.state.androidNewInstallations}
+                
                 appUnits={this.state.appUnits}
                 dot={false}
                 situation="Aktiivisia asennuksia Android-laitteilla"
@@ -139,6 +140,7 @@ class Main extends Component {
 
             <Route exact path="/kirjautumiset">
               <RegisterSignIn
+                signInHistory = {this.getSignInHistory()}
                 dot={false}
                 data={this.parseDateData("lastSignIn")}
                 situation="Viimeisin kirjautuminen"
@@ -263,6 +265,8 @@ class Main extends Component {
         topList={orderedTopList}
         totalUsers={this.state.allData.users.length}
         overHundred={overHundred}
+        emailList={this.state.allData.spostiLista}
+
       />
     );
   }
@@ -303,6 +307,7 @@ class Main extends Component {
         iosUnchecked={parsedData.iosUnchecked}
         webUnchecked={parsedData.webUnchecked}
         androidUnchecked={parsedData.androidUnchecked}
+        issues={this.state.allData.issueita}
       ></SpotInfo>
     );
   }
@@ -675,6 +680,28 @@ class Main extends Component {
     const file = require("./data/parsedgeojson.json");
     this.setState({ geoData: file });
   }
+  getSignInHistory(){
+    if (!this.state.allData) {
+      return;
+    }
+    // MaxAmount is here for setting the y-axis height.
+    // Auto height has some bugs...
+    let maxAmount = 0;
+
+    let dataVector = [];
+    let daysInList = this.state.allData.kirjautumishistoria.split(";");
+    for(let i = 0; i < daysInList.length; i++){
+      let itemSplitted = daysInList[i].split(",");
+      let map = {};
+      if (itemSplitted[1] > maxAmount) {
+        maxAmount = itemSplitted[1];
+      }
+      map.date = itemSplitted[0];
+      map.amount = parseInt(itemSplitted[1]);
+      dataVector.push(map);
+    }
+    return dataVector;
+  }
 
   parseCityData() {
     if (!this.state.allData || !this.state.geoData) {
@@ -749,5 +776,7 @@ function countDistance(lat1, lat2, lon1, lon2) {
     )
   );
 }
+
+
 
 export default Main;

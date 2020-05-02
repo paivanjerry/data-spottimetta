@@ -22,6 +22,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 34px;
   border-radius: 3px;
   background: url("https://data.spottimetta.fi/favicon.ico") no-repeat;
+  pointer-events: auto;
 
   cursor: pointer;
   -webkit-appearance: none;
@@ -45,7 +46,8 @@ input[type="range"]::-moz-range-thumb {
   height: 34px;
   width: 34px;
   border-radius: 3px;
-  background: #ffffff;
+  pointer-events: auto;
+  background: url("https://data.spottimetta.fi/favicon.ico") ;
   cursor: pointer;
 }
 input[type="range"]::-ms-track {
@@ -143,33 +145,46 @@ input[type="range"]:focus::-ms-fill-upper {
 
 #lowerSlider{
   z-index: 100;
+  height: 0px;
 }
 #upperSlider{
+  /* TÄÄ SLIDER JÄÄ TAUSTALLE*/
+  height: 0px;
   z-index: 10;
 }
 #lowerSlider::-webkit-slider-runnable-track {
   width: 0%;
   height: 0px;
+  margin-bottom: 8px;
   cursor: pointer;
   box-shadow: 0px transparent, 0px  transparent;
   background: transparent;
   border-radius: 0px;
   border: 0px solid transparent;
+  pointer-events: none;
 }
-
-#lowerSlider:focus::-webkit-slider-runnable-track {
-  background: transparent;
+#upperSlider::-webkit-slider-runnable-track {
+  width: 0%;
+  height: 8px;
+  cursor: pointer;
+  box-shadow: 0px transparent, 0px  transparent;
+  border-radius: 0px;
+  border: 0px solid transparent;
+  pointer-events: none;
 }
 
 #lowerSlider::-moz-range-track {
-  width: 0%;
-  height: 0px;
+  width: 0;
+  height: 0;
   cursor: pointer;
+  pointer-events: none;
   box-shadow:  transparent,  transparent;
-  background: transparent;
+  background: transparent ;
   border-radius: 1.3px;
   border: 0px solid transparent;
+  
 }
+
 
 #lowerSlider::-ms-track {
   width: 0%;

@@ -1,3 +1,9 @@
+// Class for common one line chart
+// Parameters: 
+// data = [{date: "12.12.2012", amount: 5}][...][...]
+// String xAxisName = "Asennuksia" -- hover labelin teksti
+// bool dot = false  -- piirretäänkö mittauspisteisiin pisteet
+
 import React, { Component } from "react";
 import {
   LineChart,
@@ -35,7 +41,7 @@ class PlotChart extends Component {
             dot={this.props.dot}
             activeDot={{ stroke: "green", fill: "green", strokeWidth: 2, r: 5 }}
           />
-          <Brush dataKey="date" height={100}/>
+          <Brush dataKey="date" height={100} />
           {this.props.data
             ? this.props.data.map((dataElement, index) =>
                 this.getRefDot(dataElement, index)
@@ -43,7 +49,7 @@ class PlotChart extends Component {
             : ""}
 
           <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-          <XAxis dataKey="date" />
+          <XAxis dataKey="date"  />
           <YAxis dataKey="amount" name={this.props.xAxisName + " - "} />
           <Tooltip />
           
@@ -53,6 +59,7 @@ class PlotChart extends Component {
     );
   }
   getRefDot(dataElement, index) {
+    
     if (dataElement.info) {
       return (
         <ReferenceDot

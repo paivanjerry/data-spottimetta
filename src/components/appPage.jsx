@@ -33,6 +33,7 @@ class AppPage extends Component {
             { name: "iOS", data: this.props.appUnits },
           ]}
         ></DualChart>
+
       </div>
     );
   }

@@ -59,7 +59,7 @@ class DualChart extends Component {
           <input
             className="sidePadding50 dualRange"
             type="range"
-            onMouseUp={this.scalePlot.bind(this)}
+            onInputCapture={this.scalePlot.bind(this)}
             min="1"
             max="50"
             defaultValue="50"
@@ -68,7 +68,7 @@ class DualChart extends Component {
           <input
             className="sidePadding50 dualRange"
             type="range"
-            onMouseUp={this.scalePlot.bind(this)}
+            onInputCapture={this.scalePlot.bind(this)}
             min="1"
             max="50"
             defaultValue="1"

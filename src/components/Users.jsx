@@ -93,6 +93,10 @@ class Users extends Component {
       "Käyttäjiä, jotka ovat lisänneet spotteja yli 100km alueelle",
       this.props.overHundred + " (" + overHundredPersentage + " %)"
     ]);
+    finalData.push([
+      "Sähköposti-ilmoitukset aktivoineita käyttäjiä",
+      this.props.emailList
+    ]);
 
     return finalData;
   }

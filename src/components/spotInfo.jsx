@@ -154,7 +154,7 @@ class SpotInfo extends Component {
     );
 
     finalList.push(["Spottien keskiarvosijainti", coordListElement]);
-
+    finalList.push(["Missä tää on? -listalla spotteja", this.props.issues]);
     return finalList;
   }
 
