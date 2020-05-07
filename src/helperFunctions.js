@@ -1,7 +1,6 @@
 
 // If first is bigger, returns true.
 export function compareDates(date1, date2){
-  console.log("Datejen vertailua " + date1 + " - " + date2);
   
   let list1 = date1.split(".");
   let list2 = date2.split(".");

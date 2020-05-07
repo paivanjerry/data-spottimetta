@@ -117,6 +117,7 @@ class Main extends Component {
                 data2={this.state.androidNewInstallations}
                 
                 appUnits={this.state.appUnits}
+                iosSessions={this.state.iosSessions}
                 dot={false}
                 situation="Aktiivisia asennuksia Android-laitteilla"
                 xAxisName="Asennuksia"
@@ -570,7 +571,8 @@ class Main extends Component {
         }
         this.setState({ androidInstallations});
         this.getNewAndroidInstallsFromFile();
-        this.getAppUnitsFromFile();
+        this.getIosFileData("appunits.csv", "appUnits");
+        this.getIosFileData("iossessions.csv", "iosSessions", true);
       });
   }
   setLatestAppsUpdated(listTime){
@@ -629,13 +631,13 @@ class Main extends Component {
       });
   }
 
-  getAppUnitsFromFile() {
-    fetch(`${process.env.PUBLIC_URL}/appunits.csv`)
+  getIosFileData(filename, statename, divide = false) {
+    fetch(`${process.env.PUBLIC_URL}/${filename}`)
       .then((r) => r.text())
       .then((allText) => {
         let rows = allText.split("\n");
 
-        let appUnits = [];
+        let data = [];
         for (let i = 5; i < rows.length; i++) {
           const element = rows[i];
 
@@ -652,8 +654,20 @@ class Main extends Component {
           let year = "20" + timeParts[2];
 
           const listTime = day + "." + month + "." + year;
-          let amount = parseInt(rowInList[1]);
-          appUnits.push({
+          let amount;
+           if(divide){
+             if(parseInt(rowInList[1]) === 0){
+               amount = "0";
+             }
+             else{
+               amount = (parseInt(rowInList[1])/parseInt(rowInList[2])).toFixed(2);
+             }
+             
+            } 
+           else{
+             amount = parseInt(rowInList[1]);
+           }
+          data.push({
             date: listTime,
             amount: amount,
           });
@@ -672,7 +686,7 @@ class Main extends Component {
             }
           }
         }
-        this.setState({ appUnits: appUnits });
+        this.setState({ [statename]: data });
       });
   }
 

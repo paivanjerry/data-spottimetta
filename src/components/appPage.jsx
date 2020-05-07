@@ -34,6 +34,17 @@ class AppPage extends Component {
           ]}
         ></DualChart>
 
+
+        <h2 className="bodyText m50t">iOS sovelluksen päivän sessareiden keskiarvo</h2>
+        <p className="graphDescription bodyText">
+          Kuvaaja kertoo kuinka monta kertaa päivän aikana sovelluksen avannut henkilö avaa keskimäärin sovelluksen samana päivänä. Otos sisältää dataa vain noin viidennekseltä sovelluksen käyttäjistä (, eli ne jotka sallivat asetuksista tiedon jaon sovellukseen). Keskiarvokuvaajassa se ei kuitenkaan vääristä liikaa. Kuitenkaan tämän ongelman takia esim. iOS asennusten määrää ei voida tietää tarkalleen.
+        </p>
+        <PlotChart
+          dot={this.props.dot}
+          data={this.props.iosSessions}
+          xAxisName="Sessareita"
+        ></PlotChart>
+
       </div>
     );
   }
