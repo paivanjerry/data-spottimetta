@@ -14,7 +14,7 @@ class DataTable extends Component {
     for(let i = 0; i < tableData.length; i++){
       tableData[i].push(i + 1);
     }
-    this.state = { tableData };
+    this.state = { tableData , valsAscending: -1, keysAscending: -1};
   }
 
   render() {

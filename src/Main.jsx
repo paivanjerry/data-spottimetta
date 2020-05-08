@@ -21,29 +21,29 @@ class Main extends Component {
       {
         title: "Puhelimille asennettujen sovellusten tilastoja",
         description:
-          "Dataa Android sovelluksen julkaisuhetkestä lähtien. Versioiden julkaisuajat, aktiiviset asennukset & uudet lataukset",
+          "Dataa Android sovelluksen julkaisuhetkestä lähtien. Versioiden julkaisuajat, aktiiviset asennukset & uudet lataukset. Tietoa myös iOS-sovelluksesta.",
         image: "../images/puhelin.png",
         path: "sovellukset",
         updated: -1,
       },
       {
         title: "Rekisteröitymiset",
-        description: "Tarkastele rekisteröitymisten määrää reaaliaikaisesti",
+        description: "Tarkastele rekisteröitymisten määrää sekä kertymää reaaliaikaisesti",
         image: "../images/register.png",
         path: "rekisteroitymisia",
         updated: -1,
       },
       {
-        title: "Viimeiset kirjautumiset",
-        description: "Tarkastele sovellukseen kirjautumisia",
+        title: "Kirjautumiset",
+        description: "Tarkastele sovellukseen kirjautumisia. Kuvaajina käyttäjien viimeinen kirjautumisen hetki sekä päivien kirjautumisten määrä",
         image: "../images/avain.png",
         path: "kirjautumiset",
         updated: -1,
       },
       {
-        title: "Spottien lisääjät",
+        title: "Käyttäjiin liittyviä tilastoja",
         description:
-          "Käyttäjien toimintoihin liittyviä tilastoja. Esim spotteja lisänneet käyttäjät ja niiden jakauma.",
+          "Käyttäjien toimintoihin liittyviä tilastoja. Esimerkiksi spotteja lisänneet käyttäjät ja niiden jakauma.",
         image: "../images/lisaajat.png",
         path: "lisaajat",
         updated: -1,
@@ -52,7 +52,7 @@ class Main extends Component {
       {
         title: "Spottien tilastot",
         description:
-          "Paljon tilastoja sovelluksen paikoista, kuten kategoriajako, yleisin sana nimessä, keskiarvo spotin otsikon pituudesta yms...",
+          "Paljon tilastoja sovelluksen paikoista, kuten kategoriajako, kommentoitujen spottien määrä, yleisin sana nimessä, keskiarvo spotin otsikon pituudesta yms...",
         image: "../images/pinni.png",
         path: "spotit",
         updated: -1,
@@ -97,12 +97,16 @@ class Main extends Component {
 
     // if allData still got value, it means we can use it as valid cache for this hour
     if (allData) {
-      this.setState({
-        allData,
-      });
+      this.setState({ allData}, ()=>
+        this.dataHaettu()
+    );
     } else {
       this.getData();
+      
     }
+
+    
+    
   }
 
   render() {
@@ -126,10 +130,11 @@ class Main extends Component {
 
             <Route exact path="/rekisteroitymisia">
               <RegisterSignIn
-                data={this.parseDateData("creationTime")}
+                data= {this.state.registers}
+                registersCumulative = {this.state.registersCumulative}
                 dot={false}
                 situation="Rekisteröitymisiä"
-                description="Rekisteröityneitä käyttäjiä (ensimmäinen kirjautuminen). Laskelmiin sisältyy kaikki alustat."
+                description="Rekisteröityneitä käyttäjiä päivittäin (ensimmäinen kirjautuminen). Laskelmiin sisältyy kaikki alustat."
               />
             </Route>
 
@@ -143,7 +148,7 @@ class Main extends Component {
               <RegisterSignIn
                 signInHistory = {this.getSignInHistory()}
                 dot={false}
-                data={this.parseDateData("lastSignIn")}
+                data={this.state.lastSignIns}
                 situation="Viimeisin kirjautuminen"
                 description="Käyttäjien viimeisimmän kirjautumisen ajanhetki. Kaikkien alustojen yhteenlaskettu tilasto. Toimintaperiaate: käyttäjä on kirjautunut viikko sitten ja kirjautuu nyt uudestaan --> viikon takainen kuvaajan piste pienentyy yhdellä arvolla ja tämänpäiväinen piste nousee yhdellä arvolla."
               ></RegisterSignIn>
@@ -174,14 +179,20 @@ class Main extends Component {
   getData() {
     axios
       .get("https://us-central1-spottimett.cloudfunctions.net/getData")
-      .then((response) => this.saveData(response));
+      .then((response) => {
+        this.saveData(response);
+        
+      });
+      
   }
   saveData(response) {
     let allData = JSON.parse(response.request.response);
     allData.date = new Date().getTime();
     localStorage.setItem("spottidata", JSON.stringify(allData));
 
-    this.setState({ allData });
+    this.setState({ allData}, ()=>
+        this.dataHaettu()
+    );
   }
 
   getUsersComponent() {
@@ -463,7 +474,6 @@ class Main extends Component {
     if (!this.state.allData) {
       return;
     }
-
     let parsedData = [
       /* date: "2.10.2019", amount: 5 */
     ];
@@ -526,7 +536,14 @@ class Main extends Component {
     }
     // Sort it for the graph
     parsedData.sort(dateCompare);
-
+    
+    
+    if(situation === "creationTime"){
+      this.setState({registers: parsedData});
+    }
+    else{
+      this.setState({lastSignIns: parsedData});
+    }
     return parsedData;
   }
 
@@ -764,6 +781,24 @@ class Main extends Component {
 
     return topList;
   }
+
+  async dataHaettu(){
+    let registerData = this.parseDateData("creationTime");
+    this.parseDateData("lastSignIn")
+    this.setCumulativeRegisters(registerData);
+  }
+
+  setCumulativeRegisters(registerData){
+    let cumRegData = JSON.parse(JSON.stringify(registerData));
+    let total = 0;
+    for(let i = 0; i < cumRegData.length; i++){
+      total += cumRegData[i]["amount"];
+      cumRegData[i]["amount"] = total;
+    }
+    this.setState({registersCumulative: cumRegData});
+    
+  }
+
 } // class Main
 
 function dateCompare(a, b) {
