@@ -70,6 +70,13 @@ class Users extends Component {
       ) / 100
     ).toFixed(2);
 
+    let recentAddersPersentage = (
+      Math.round(
+        (100 * 100 * this.props.recentAdders) /
+          (this.props.totalUsers)
+      ) / 100
+    ).toFixed(2);
+
     finalData.push([
       "Spottien lisääjiä",
       this.props.topList.length +
@@ -92,6 +99,10 @@ class Users extends Component {
     finalData.push([
       "Käyttäjiä, jotka ovat lisänneet spotteja yli 100km alueelle",
       this.props.overHundred + " (" + overHundredPersentage + " %)"
+    ]);
+    finalData.push([
+      "Käyttäjiä, jotka ovat lisänneet spotteja viimeisen 3 viikon aikana",
+      this.props.recentAdders + " (" + recentAddersPersentage + " %)"
     ]);
     finalData.push([
       "Sähköposti-ilmoitukset aktivoineita käyttäjiä",

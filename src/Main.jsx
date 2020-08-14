@@ -122,7 +122,6 @@ class Main extends Component {
                 
                 appUnits={this.state.appUnits}
                 iosSessions={this.state.iosSessions}
-                dot={false}
                 situation="Aktiivisia asennuksia Android-laitteilla"
                 xAxisName="Asennuksia"
               />
@@ -132,7 +131,6 @@ class Main extends Component {
               <RegisterSignIn
                 data= {this.state.registers}
                 registersCumulative = {this.state.registersCumulative}
-                dot={false}
                 situation="Rekisteröitymisiä"
                 description="Rekisteröityneitä käyttäjiä päivittäin (ensimmäinen kirjautuminen). Laskelmiin sisältyy kaikki alustat."
               />
@@ -147,7 +145,6 @@ class Main extends Component {
             <Route exact path="/kirjautumiset">
               <RegisterSignIn
                 signInHistory = {this.getSignInHistory()}
-                dot={false}
                 data={this.state.lastSignIns}
                 situation="Viimeisin kirjautuminen"
                 description="Käyttäjien viimeisimmän kirjautumisen ajanhetki. Kaikkien alustojen yhteenlaskettu tilasto. Toimintaperiaate: käyttäjä on kirjautunut viikko sitten ja kirjautuu nyt uudestaan --> viikon takainen kuvaajan piste pienentyy yhdellä arvolla ja tämänpäiväinen piste nousee yhdellä arvolla."
@@ -203,10 +200,18 @@ class Main extends Component {
     let topList = {};
     let idList = [];
     let overHundred = 0;
+    let recentAddersList = [];
     for (let spot in this.state.allData.data) {
       const id = this.state.allData.data[spot]["ID"];
       const lat = parseFloat(this.state.allData.data[spot]["LAT"]);
       const lon = parseFloat(this.state.allData.data[spot]["LON"]);
+
+      let threeWeeksAgo = new Date().getTime() - 1814400000;
+      if(this.state.allData.data[spot].AIKA && this.state.allData.data[spot].AIKA > (threeWeeksAgo/1000)){
+        if(!recentAddersList.includes(id)){
+          recentAddersList.push(id);
+        }
+      }
       if (id !== null && id !== undefined) {
         // Not from old skatemap
         idList.push(id);
@@ -277,6 +282,7 @@ class Main extends Component {
         topList={orderedTopList}
         totalUsers={this.state.allData.users.length}
         overHundred={overHundred}
+        recentAdders={recentAddersList.length}
         emailList={this.state.allData.spostiLista}
 
       />
@@ -320,6 +326,7 @@ class Main extends Component {
         webUnchecked={parsedData.webUnchecked}
         androidUnchecked={parsedData.androidUnchecked}
         issues={this.state.allData.issueita}
+        newSpots={parsedData.newSpots}
       ></SpotInfo>
     );
   }
@@ -348,13 +355,18 @@ class Main extends Component {
     let avgLat = 0;
     let avgLon = 0;
     let wordCounter = [];
+    let newSpots = 0;
     let unchecked = 0;
     let webUnchecked = 0;
     let iosUnchecked = 0;
     let androidUnchecked = 0;
 
     let avgCounter = 1;
+    let threeWeeksAgo = new Date().getTime() - 1814400000;
     for (let spot in this.state.allData.data) {
+      if(this.state.allData.data[spot].AIKA && this.state.allData.data[spot].AIKA > (threeWeeksAgo/1000)){
+        newSpots++;
+      }
       let category = this.state.allData.data[spot]["TYYPPI"];
       let found = false;
       let notChecked = this.state.allData.data[spot]["TARKISTETTU"];
@@ -463,6 +475,7 @@ class Main extends Component {
       iosUnchecked,
       webUnchecked,
       androidUnchecked,
+      newSpots
     };
   } //parseCategoryData()
 
@@ -560,7 +573,8 @@ class Main extends Component {
           const timeParts = rowInList[1].split("-");
           const listTime =
             timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
-          let amount = parseInt(rowInList[3].replace("-", "0"));
+            
+          let amount = parseInt(rowInList[3].replace("-", "0").replace(/\s/g,''));
           let versionInfo;
           if (rowInList.length > 4) {
             let description = rowInList[4];
@@ -576,7 +590,7 @@ class Main extends Component {
           if (amount !== 0 || i < rows.length - 10) {
             androidInstallations.push({
               date: listTime,
-              amount: parseInt(rowInList[3].replace("-", "0")),
+              amount,
               info: versionInfo,
             });
           }
@@ -617,8 +631,9 @@ class Main extends Component {
           const timeParts = rowInList[1].split("-");
           const listTime =
             timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
-          let amount = parseInt(rowInList[3].replace("-", "0"));
+          let amount = parseInt(rowInList[3].replace("-", "10000000"));
 
+          // Somehow this amount !== 0 statements prevent from stopping the drawing while facing 0 value
           if (amount !== 0 || i < rows.length - 10) {
             androidInstallations.push({
               date: listTime,

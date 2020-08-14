@@ -14,7 +14,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   ReferenceDot,
-  Brush
+  Brush,
+  ReferenceLine
 } from "recharts";
 
 let yOffset = 50;
@@ -38,7 +39,7 @@ class PlotChart extends Component {
             dataKey="amount"
             stroke="#0073e6"
             strokeWidth="2"
-            dot={this.props.dot}
+            dot={this.props.data && this.props.data.length < 30}
             activeDot={{ stroke: "green", fill: "green", strokeWidth: 2, r: 5 }}
           />
           <Brush dataKey="date" height={100} />
@@ -47,17 +48,71 @@ class PlotChart extends Component {
                 this.getRefDot(dataElement, index)
               )
             : ""}
+            {this.getAvgLine()}
+            {this.getWeekAvgLine()}
 
           <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
           <XAxis dataKey="date"  />
           <YAxis dataKey="amount" name={this.props.xAxisName + " - "} />
           <Tooltip />
-          
+
         </LineChart>
       </ResponsiveContainer>
       
     );
   }
+
+
+  
+
+getAvgLine(){
+  if(!this.props.avgLine){
+    return;
+  }
+  return <ReferenceLine y={this.countWeekAvg()} stroke="green" strokeDasharray="20 20" />
+  
+}
+
+getWeekAvgLine(){
+  if(!this.props.avgLine){
+    return;
+  }
+  return <ReferenceLine y={this.countAvg()} stroke="red" strokeDasharray="20 20" />
+}
+
+countWeekAvg(){
+  let avgCounter = 1;
+  let avgAmount = 0;
+  if(this.props.data === undefined){
+      return;
+    }
+  for(let i = this.props.data.length -1; i > this.props.data.length -8; i--){
+
+    
+    let value = this.props.data[i];
+    let val = value.amount;  
+    avgAmount = avgAmount + (val - avgAmount) / avgCounter;
+    avgCounter++;
+    
+  }
+  return avgAmount;
+}
+
+countAvg(){
+  let avgCounter = 1;
+  let avgAmount = 0;
+  if(this.props.data === undefined){
+      return;
+    }
+  for(let i = 0; i < this.props.data.length; i++){
+    let value = this.props.data[i];
+    let val = value.amount;
+    avgAmount = avgAmount + (val - avgAmount) / avgCounter;
+    avgCounter++;
+  }
+  return avgAmount;
+}
+
   getRefDot(dataElement, index) {
     
     if (dataElement.info) {

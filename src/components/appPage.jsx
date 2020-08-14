@@ -16,7 +16,6 @@ class AppPage extends Component {
           julkaisuhetket.
         </p>
         <PlotChart
-          dot={this.props.dot}
           data={this.props.data}
           xAxisName="Asennuksia"
         ></PlotChart>
@@ -27,7 +26,6 @@ class AppPage extends Component {
           sovelluksen. Dataa iOS ja Android sovelluksista.
         </p>
         <DualChart
-          dot={this.props.dot}
           data={[
             { name: "Android", data: this.props.data2 },
             { name: "iOS", data: this.props.appUnits },
@@ -38,10 +36,11 @@ class AppPage extends Component {
         <h2 className="bodyText m50t">iOS sovelluksen päivän sessareiden keskiarvo</h2>
         <p className="graphDescription bodyText">
           Kuvaaja kertoo kuinka monta kertaa päivän aikana sovelluksen avannut henkilö avaa keskimäärin sovelluksen samana päivänä. Otos sisältää dataa vain noin viidennekseltä sovelluksen käyttäjistä (, eli ne jotka sallivat asetuksista tiedon jaon sovellukseen). Keskiarvokuvaajassa se ei kuitenkaan vääristä liikaa. Kuitenkaan tämän ongelman takia esim. iOS asennusten määrää ei voida tietää tarkalleen.
+          <br/>Punainen poikittainen viiva näyttää kuvaajan keskiarvon. Vihreä viiva viimeisen viikon keskiarvon.
         </p>
         <PlotChart
-          dot={this.props.dot}
           data={this.props.iosSessions}
+          avgLine = {true}
           xAxisName="Sessareita"
         ></PlotChart>
 

@@ -9,7 +9,6 @@ class RegisterSignIn extends Component {
         <h2 className="bodyText">{this.props.situation}</h2>
         <p className="graphDescription bodyText">{this.props.description}</p>
         <PlotChart
-          dot={this.props.dot}
           data={this.props.data}
           xAxisName={this.props.situation}
         ></PlotChart>
@@ -25,11 +24,13 @@ class RegisterSignIn extends Component {
         return (
           <div>
           <h2 className=" m50t bodyText">Kirjautumiset päivittäin</h2>
-          <p className="graphDescription bodyText">Kuvaajassa näkyy kyseisen päivän aikana kirjautuneet käyttäjät. Vanhat ajankohdat ei laske käyttäjän kirjautuessa uudestaan.</p>
+          <p className="graphDescription bodyText">Kuvaajassa näkyy kyseisen päivän aikana kirjautuneet käyttäjät. Vanhat ajankohdat ei laske käyttäjän kirjautuessa uudestaan.
+          <br/>Punainen poikittainen viiva näyttää kuvaajan keskiarvon. Vihreä viiva viimeisen viikon keskiarvon.
+          </p>
         <PlotChart
-          dot={this.props.dot}
           data={this.props.signInHistory}
-          xAxisName="Kirjautumisia"
+          avgLine = {true}
+          xAxisName="Kirjautuneita"
         ></PlotChart>
         </div>
         );
@@ -43,7 +44,6 @@ class RegisterSignIn extends Component {
           <h2 className=" m50t bodyText">Rekisteröitymisien kertymä</h2>
           <p className="graphDescription bodyText">Kuvaajasta selviää, kuinka paljon rekisteröitymisiä on kertynyt kyseiseen päivään mennessä.</p>
         <PlotChart
-          dot={this.props.dot}
           data={this.props.registersCumulative}
           xAxisName="Rekisteröitymisiä"
         ></PlotChart>

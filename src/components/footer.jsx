@@ -9,6 +9,7 @@ class Footer extends Component {
           <a href="https://play.google.com/store/apps/details?id=com.jerry.spottimett">Spottimettä Android</a>
           <a href="https://apps.apple.com/us/app/spottimett%C3%A4/id1508565237">Spottimettä iOS</a>
           <a href="https://www.instagram.com/spottimetta/">Instagram</a>
+          <a href="https://www.distantskate.com">Distant S.K.A.T.E.</a>
 
         </div>
       </div>

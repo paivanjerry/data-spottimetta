@@ -8,7 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { compareDates } from "../helperFunctions.js";
+import { compareDates, getDatediff } from "../helperFunctions.js";
 
 class DualChart extends Component {
   constructor(props) {
@@ -35,7 +35,7 @@ class DualChart extends Component {
                 type="monotone"
                 stroke={this.getStroke(s)}
                 strokeWidth="2"
-                dot={this.props.dot}
+                dot={this.state.maxDate !== undefined && this.state.minDate !== undefined && getDatediff(this.state.maxDate, this.state.minDate) < 31} 
                 activeDot={{
                   stroke: "green",
                   fill: "green",

@@ -155,6 +155,8 @@ class SpotInfo extends Component {
 
     finalList.push(["Spottien keskiarvosijainti", coordListElement]);
     finalList.push(["Missä tää on? -listalla spotteja", this.props.issues]);
+    finalList.push(["Uutuuslistalla spotteja", this.props.newSpots]);
+    finalList.push(["Spotteja lisätty päivittäin (3vk keskiarvo)", (this.props.newSpots / 21).toFixed(1) || ""]);
     return finalList;
   }
 
