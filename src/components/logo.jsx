@@ -8,6 +8,7 @@ class Logo extends Component {
     return (
       <Link to="/">
         <img
+          style={{minHeight: "336px", minWidth: "300px", background: "#f8f8f8", borderRadius: "20px"}}
           className="logo"
           src="/spottimettadataotsikko.gif"
           alt="Data spottimettä"

@@ -559,6 +559,21 @@ class Main extends Component {
     }
     return parsedData;
   }
+  /**
+   * returns datestring in format 01.09.2019
+   * @param {Finnish local string representation of time. 
+   * Play Store report format "1. elok. 2019"} strTime 
+   */
+  getDateFromStrTime(strTime){
+    const monthsToNumbers = {tammik: "01", helmik: "02", maalisk: "03", huhtik: "04", toukok: "05", kesäk: "06", heinäk: "07", elok: "08", syysk: "09", lokak: "10", marrask: "11", jouluk: "12"}
+    for (const key of Object.keys(monthsToNumbers)) {
+      strTime = strTime.replace(key, monthsToNumbers[key])
+    }
+    strTime = strTime.replaceAll(".", "")
+    const splitted = strTime.split(" ")
+    return splitted[0] + "." + splitted[1] + "." + splitted[2]
+    
+  }
 
   getDataFromFile() {
     fetch(`${process.env.PUBLIC_URL}/androidActiveDownloads.csv`)
@@ -567,19 +582,24 @@ class Main extends Component {
         let rows = allText.split("\n");
 
         let androidInstallations = [];
-        for (let i = 4; i < rows.length - 2; i++) {
+        for (let i = 1; i < rows.length /*- 2*/; i++) {
+
           const element = rows[i];
           const rowInList = element.split(",");
-          const timeParts = rowInList[1].split("-");
-          const listTime =
-            timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
+          if(rowInList.length < 3){
+            continue
+          }
+          
+          const listTime = this.getDateFromStrTime(rowInList[0])
+
+          
             
-          let amount = parseInt(rowInList[3].replace("-", "0").replace(/\s/g,''));
+          let amount = parseInt(rowInList[1].replace("-", "0").replace(/\s/g,''));
           let versionInfo;
-          if (rowInList.length > 4) {
-            let description = rowInList[4];
-            if (description.includes("Julkaisun käyttöönotto - ")) {
-              const startIndex = description.search(" - ") + 3;
+          if (true) {
+            let description = rowInList[2];
+            if (description.includes("Julkaisun käyttöönotto: ")) {
+              const startIndex = description.search(": ") + 2;
 
               description = description.substr(startIndex);
               const endIndex = description.search(" ");
@@ -619,7 +639,7 @@ class Main extends Component {
   }
 
   getNewAndroidInstallsFromFile() {
-    fetch(`${process.env.PUBLIC_URL}/androidNewDownloads.csv`)
+    fetch(`${process.env.PUBLIC_URL}/androidNewDownloadsOld.csv`)
       .then((r) => r.text())
       .then((allText) => {
         let rows = allText.split("\n");
@@ -632,7 +652,7 @@ class Main extends Component {
           const listTime =
             timeParts[2] + "." + timeParts[1] + "." + timeParts[0];
           let amount = parseInt(rowInList[3].replace("-", "10000000"));
-
+          
           // Somehow this amount !== 0 statements prevent from stopping the drawing while facing 0 value
           if (amount !== 0 || i < rows.length - 10) {
             androidInstallations.push({
