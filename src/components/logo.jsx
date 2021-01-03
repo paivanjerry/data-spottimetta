@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "../css/logo.css";
 import { Link } from "react-router-dom";
-
+import logoImg from '../images/spottimettadataotsikko.gif'
 class Logo extends Component {
   state = {};
   render() {
@@ -10,8 +10,8 @@ class Logo extends Component {
         <img
           style={{minHeight: "336px", minWidth: "300px", background: "#f8f8f8", borderRadius: "20px"}}
           className="logo"
-          src="/spottimettadataotsikko.gif"
-          alt="Data spottimettä"
+          src={logoImg}
+          alt="Data spottimettä logo"
         />
       </Link>
     );

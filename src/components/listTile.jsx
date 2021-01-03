@@ -12,6 +12,8 @@ class ListTile extends Component {
         <td className="listImage">
           <div className="vertical listImage">
             <img
+              height="80px"
+              width="80px"
               className="listImage"
               src={this.props.object.image}
               alt="data type icon"
@@ -34,7 +36,7 @@ class ListTile extends Component {
         <td>
           <span className="tableUpdated">
             {this.props.object.updated === -1
-              ? "Nyt"
+              ? "-"
               : this.props.object.updated}
           </span>
         </td>

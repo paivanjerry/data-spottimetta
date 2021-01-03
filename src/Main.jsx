@@ -11,7 +11,21 @@ import Users from "./components/Users";
 import CityPage from "./components/cityPage";
 import AppPage from "./components/appPage";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { compareDates} from './helperFunctions.js'
+import { compareDates, formatTime} from './helperFunctions.js'
+import phoneImg from './images/puhelin.png'
+import registerImg from './images/register.png'
+import keyImg from './images/avain.png'
+import addersImg from './images/lisaajat.png'
+import pinImg from './images/pinni.png'
+import cityImg from './images/kaupunki.png'
+import opendataImg from './images/avoindata.png'
+import iossessions from './files/iossessions.csv';
+import appunits from './files/appunits.csv';
+import androidActiveDownloads from './files/androidActiveDownloads.csv';
+import androidNewDownloads from './files/androidNewDownloadsOld.csv';
+
+// import  './fonts/lilita-one.css';
+import "@fontsource/lilita-one"
 
 class Main extends Component {
   constructor(props) {
@@ -22,21 +36,21 @@ class Main extends Component {
         title: "Puhelimille asennettujen sovellusten tilastoja",
         description:
           "Dataa Android sovelluksen julkaisuhetkestä lähtien. Versioiden julkaisuajat, aktiiviset asennukset & uudet lataukset. Tietoa myös iOS-sovelluksesta.",
-        image: "../images/puhelin.png",
+        image: phoneImg,
         path: "sovellukset",
         updated: -1,
       },
       {
         title: "Rekisteröitymiset",
         description: "Tarkastele rekisteröitymisten määrää sekä kertymää reaaliaikaisesti",
-        image: "../images/register.png",
+        image: registerImg,
         path: "rekisteroitymisia",
         updated: -1,
       },
       {
         title: "Kirjautumiset",
         description: "Tarkastele sovellukseen kirjautumisia. Kuvaajina käyttäjien viimeinen kirjautumisen hetki sekä päivien kirjautumisten määrä",
-        image: "../images/avain.png",
+        image: keyImg,
         path: "kirjautumiset",
         updated: -1,
       },
@@ -44,7 +58,7 @@ class Main extends Component {
         title: "Käyttäjiin liittyviä tilastoja",
         description:
           "Käyttäjien toimintoihin liittyviä tilastoja. Esimerkiksi spotteja lisänneet käyttäjät ja niiden jakauma.",
-        image: "../images/lisaajat.png",
+        image: addersImg,
         path: "lisaajat",
         updated: -1,
       },
@@ -53,7 +67,7 @@ class Main extends Component {
         title: "Spottien tilastot",
         description:
           "Paljon tilastoja sovelluksen paikoista, kuten kategoriajako, kommentoitujen spottien määrä, yleisin sana nimessä, keskiarvo spotin otsikon pituudesta yms...",
-        image: "../images/pinni.png",
+        image: pinImg,
         path: "spotit",
         updated: -1,
       },
@@ -61,7 +75,7 @@ class Main extends Component {
         title: "Kaupunkien spottimäärät",
         description:
           "Noin 50 suurimman kaupungin/kunnan tilastot. Taulukoita spottimäärästä, sekä asukaslukuun suhteutettua tilastoa.",
-        image: "../images/kaupunki.png",
+        image: cityImg,
         path: "kaupungit",
         updated: -1,
       },
@@ -69,7 +83,7 @@ class Main extends Component {
       {
         title: "Avoin data",
         description: "Tallenna spottimetän paikat .csv- tai .json-tiedostossa.",
-        image: "../images/avoindata.png",
+        image: opendataImg,
         path: "avoindata",
         updated: -1,
       },
@@ -91,7 +105,7 @@ class Main extends Component {
       allData = JSON.parse(localStorage.getItem("spottidata"));
     }
     // setting allData to null if it wasn't stored in the past hour
-    if (allData && new Date().getTime() > allData.date + 3600000) {
+    if ((allData && new Date().getTime() > allData.date + 3600000)) {
       allData = null;
     }
 
@@ -102,9 +116,7 @@ class Main extends Component {
     );
     } else {
       this.getData();
-      
     }
-
     
     
   }
@@ -131,6 +143,7 @@ class Main extends Component {
               <RegisterSignIn
                 data= {this.state.registers}
                 registersCumulative = {this.state.registersCumulative}
+                register={true}
                 situation="Rekisteröitymisiä"
                 description="Rekisteröityneitä käyttäjiä päivittäin (ensimmäinen kirjautuminen). Laskelmiin sisältyy kaikki alustat."
               />
@@ -174,16 +187,25 @@ class Main extends Component {
   }
 
   getData() {
+    console.log("Data fetch");
     axios
       .get("https://us-central1-spottimett.cloudfunctions.net/getData")
       .then((response) => {
-        this.saveData(response);
+        console.log("data fetch response",response);
+        this.saveData(response.request.response);
         
-      });
+      }).catch((e) => {
+        console.log("error on request",e);
+        // Error => no internet? => use cache
+        this.saveData(localStorage.getItem("spottidata"));
+      })
       
   }
   saveData(response) {
-    let allData = JSON.parse(response.request.response);
+    if(!response){
+      alert("Tietoja ei voitu hakea palvelimelta tai välimuistista.\n\nVain sovellukset sivun tiedot ovat näkyvissä.")
+    }
+    let allData = JSON.parse(response);
     allData.date = new Date().getTime();
     localStorage.setItem("spottidata", JSON.stringify(allData));
 
@@ -576,7 +598,7 @@ class Main extends Component {
   }
 
   getDataFromFile() {
-    fetch(`${process.env.PUBLIC_URL}/androidActiveDownloads.csv`)
+    fetch(androidActiveDownloads)
       .then((r) => r.text())
       .then((allText) => {
         let rows = allText.split("\n");
@@ -622,8 +644,8 @@ class Main extends Component {
         }
         this.setState({ androidInstallations});
         this.getNewAndroidInstallsFromFile();
-        this.getIosFileData("appunits.csv", "appUnits");
-        this.getIosFileData("iossessions.csv", "iosSessions", true);
+        this.getIosFileData(appunits, "appUnits");
+        this.getIosFileData(iossessions, "iosSessions", true);
       });
   }
   setLatestAppsUpdated(listTime){
@@ -639,7 +661,7 @@ class Main extends Component {
   }
 
   getNewAndroidInstallsFromFile() {
-    fetch(`${process.env.PUBLIC_URL}/androidNewDownloadsOld.csv`)
+    fetch(androidNewDownloads)
       .then((r) => r.text())
       .then((allText) => {
         let rows = allText.split("\n");
@@ -684,7 +706,7 @@ class Main extends Component {
   }
 
   getIosFileData(filename, statename, divide = false) {
-    fetch(`${process.env.PUBLIC_URL}/${filename}`)
+    fetch(filename)
       .then((r) => r.text())
       .then((allText) => {
         let rows = allText.split("\n");
@@ -816,8 +838,23 @@ class Main extends Component {
 
     return topList;
   }
-
+  updateListTileDates(){
+    console.log("update dates");
+    let listItems = [...this.state.listItems]
+    let newListItems = []
+    let updated = {...this.state.allData}.date
+    let ago = formatTime(updated)
+    for(let item of listItems){
+      if(item.path !== "sovellukset"){
+        
+      item.updated = ago;
+      }
+      newListItems.push(item)
+    }
+    this.setState(newListItems)
+  }
   async dataHaettu(){
+    this.updateListTileDates();
     let registerData = this.parseDateData("creationTime");
     this.parseDateData("lastSignIn")
     this.setCumulativeRegisters(registerData);

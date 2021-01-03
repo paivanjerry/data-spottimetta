@@ -31,7 +31,7 @@ class SpotInfo extends Component {
         ></DataTable>
 
         <div className="sliderContainer">
-          <h5>Hae erakoituneita spotteja</h5>
+          <h3>Hae erakoituneita spotteja</h3>
           <p>
             Etsi spotteja, joilla ei ole toista spottia valitulla etäisyytellä.
             <br />

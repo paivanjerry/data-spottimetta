@@ -88,8 +88,8 @@ input[type="range"]:focus::-ms-fill-upper {
 }
 
 .sliderContainer {
-  max-width: 600px;
-  width: 90%;
+  max-width: 100vw;
+  width: 600px;
   margin: auto;
   margin-top: 50px;
   border: solid rgb(189, 189, 189);

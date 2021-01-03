@@ -53,3 +53,12 @@ h2 {
   margin-right: auto;
   width: fit-content;
 }
+a:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+a{
+  color: #007bff;
+  text-decoration: none;
+  background-color: transparent;
+}
