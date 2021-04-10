@@ -4,6 +4,7 @@ import "../App.css";
 import DataTable from "./dataTable";
 import CategoryChart from "./categoryChart";
 
+
 class SpotInfo extends Component {
   constructor(props) {
     super(props);
@@ -12,7 +13,6 @@ class SpotInfo extends Component {
 
   componentDidMount() {
     let startValue = 50;
-
     document.getElementById("spotRange").value = startValue;
     this.setState({
       sliderValue: startValue
@@ -64,7 +64,7 @@ class SpotInfo extends Component {
           <br />
           <button
             className="button"
-            onClick={this.countDistancedSpotsList.bind(this)}
+            onClick={(e) => this.countDistancedSpotsList(e)}
           >
             Laske
           </button>
@@ -148,6 +148,7 @@ class SpotInfo extends Component {
           "," +
           this.props.avgLon
         }
+        target="_blanc"
       >
         {prettierAvgLat + ", " + prettierAvgLon}
       </a>
@@ -191,19 +192,72 @@ class SpotInfo extends Component {
   }
 
   initCoordList() {
+    let oneCoordListStr = ""
     let allCoords = [];
     for (let spot1 in this.props.data) {
       let lat1 = parseFloat(this.props.data[spot1]["LAT"]);
       let lon1 = parseFloat(this.props.data[spot1]["LON"]);
       allCoords.push([lat1, lon1]);
+      oneCoordListStr += lat1
+      oneCoordListStr += ","
+      oneCoordListStr += lon1
+      oneCoordListStr += ";"
     }
 
-    this.setState({ coordList: allCoords });
+    this.setState({ coordList: allCoords, oneCoordListStr });
   }
-  countDistancedSpotsList() {
-    this.setState({ distancedSpots: "Lasketaan" });
+  wasmSupported(){
+    const supported = (() => {
+      try {
+          if (typeof WebAssembly === "object"
+              && typeof WebAssembly.instantiate === "function") {
+              const module = new WebAssembly.Module(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+              if (module instanceof WebAssembly.Module)
+                  return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
+          }
+      } catch (e) {
+      }
+      return false;
+    })();
+    return supported
 
+  }
+  async countDistancedSpotsList(e) {
+
+    let count
+    if(this.wasmSupported()){
+      count = this.cppCountDistancedSpotsList()
+      console.log("C++ Count", count);
+    }
+    else{
+      count = this.jsCountDistancedSpotsList()
+      console.log("JS Count", count);
+    }
+    if(e.shiftKey && e.ctrlKey && this.wasmSupported()){
+      // Benchmark, ctrl + shift while clicking calculate to show calculation duration in C++ and JS
+      let started = new Date().getTime()
+      this.cppCountDistancedSpotsList()
+      let half = new Date().getTime()
+      this.jsCountDistancedSpotsList()
+      let end = new Date().getTime()
+      alert("Counted with C++ in " + (half - started) + "ms\n\nand with Javascript in " + (end - half) + "ms")
+    }
+    this.setState({ distancedSpots: this.props.spotAmount - count });
+ }
+
+  
+  cppCountDistancedSpotsList(){
+    // eslint-disable-next-line
+    let res = Module.processSpots(this.state.oneCoordListStr, Number(this.state.sliderValue))
+    return res
+  }
+
+
+
+  jsCountDistancedSpotsList() {
+    
     let count = 0;
+    let sliderval = this.state.sliderValue
 
     for (let i = 0; i < this.state.coordList.length; i++) {
       const element1 = this.state.coordList[i];
@@ -219,7 +273,7 @@ class SpotInfo extends Component {
             element2[0],
             element1[1],
             element2[1]
-          ) < this.state.sliderValue
+          ) < sliderval
         ) {
           count++;
 
@@ -227,7 +281,8 @@ class SpotInfo extends Component {
         }
       }
     }
-    this.setState({ distancedSpots: this.props.spotAmount - count });
+
+    return count
   }
   handleNumberChange(event) {
     let value = event.target.value;

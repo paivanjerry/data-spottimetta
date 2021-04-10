@@ -16,8 +16,5 @@ class Logo extends Component {
       </Link>
     );
   }
-  toHomePage() {
-    window.location.pathname = "/";
-  }
 }
 export default Logo;

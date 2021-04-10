@@ -94,6 +94,7 @@ class Main extends Component {
   componentDidMount() {
     this.getDataFromFile();
     this.getGeoDataFromFile();
+    // this.initWasm(); // TODO REMOVE THE FUNCTION
 
     if (this.state.allData) {
       return;
@@ -549,7 +550,8 @@ class Main extends Component {
 
     // Now the datastructure contains only the dates which has user actions
     // Loop dates from the beginning and add empty ones
-    let now = new Date();
+    const now = new Date();
+    // eslint-disable-next-line
     for (let d = earliestDate; d <= now; d.setDate(d.getDate() + 1)) {
       let dateAlready = false;
       const dateStr =
