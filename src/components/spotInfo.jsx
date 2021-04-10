@@ -233,8 +233,8 @@ class SpotInfo extends Component {
       count = this.jsCountDistancedSpotsList()
       console.log("JS Count", count);
     }
-    if(e.shiftKey && e.ctrlKey && this.wasmSupported()){
-      // Benchmark, ctrl + shift while clicking calculate to show calculation duration in C++ and JS
+    if(((e.shiftKey && e.ctrlKey) || Number(this.state.sliderValue) === 0.12345) && this.wasmSupported()){
+      // Benchmark, ctrl + shift or distance 0.12345 while clicking calculate to show calculation duration in C++ and JS
       let started = new Date().getTime()
       this.cppCountDistancedSpotsList()
       let half = new Date().getTime()
